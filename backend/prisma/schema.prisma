@@ -7,42 +7,214 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  phoneNumber String
-  password    String
-  role        UserRole @default(USER)
+model booking {
+  id            String                @id @default(cuid())
+  userId        String
+  eventId       String
+  totalAmount   Float
+  bookingStatus booking_bookingStatus
+  paymentStatus booking_paymentStatus
+  qrCode        String?               @db.LongText
+  ticketNumber  String                @unique
 
-  events      Event[]
+  // NEW
+  checkedIn   Boolean   @default(false)
+  checkedInAt DateTime?
+  checkedInBy String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  user  @relation(fields: [userId], references: [id])
+  event event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  seats bookingSeat[]
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([eventId, checkedIn])
 }
 
-enum UserRole {
-  USER
-  ADMIN
-}
-
-
-model Event {
-  id               String   @id @default(cuid())
+model event {
+  id               String         @id @default(uuid())
   title            String
-  description      String
+  description      String         @db.Text
   location         String
   date             DateTime
   time             String
-  image            String?
-  price            Float
+  image            String?        @db.Text
   totalTickets     Int
   availableTickets Int
-  isPublished      Boolean  @default(false)
-
+  isPublished      Boolean        @default(false)
   createdById      String
-  createdBy        User     @relation(fields: [createdById], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  category         event_category
+  duration         Int
+  language         event_language
+  minimumAge       Int            @default(0)
+  organizer        String?
+  status           event_status   @default(UPCOMING)
+  venue            String
+  seatCategories   seatCategory[]
+  seats            seat[]
+  booking          booking[]
+  user             user           @relation(fields: [createdById], references: [id], map: "Event_createdById_fkey")
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  @@index([createdById], map: "Event_createdById_fkey")
+}
+
+model seatCategory {
+  id         String  @id @default(cuid())
+  eventId    String
+  name       String
+  rowLetter  String
+  price      Float
+  totalSeats Int
+  color      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  seats seat[]
+}
+
+model seat {
+  id String @id @default(cuid())
+
+  eventId String
+
+  categoryId String
+
+  row String
+
+  number Int
+
+  seatCode String
+
+  isBooked Boolean @default(false)
+
+  isLocked Boolean @default(false)
+
+  lockedUntil DateTime?
+
+  event event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  category seatCategory @relation(fields: [categoryId], references: [id])
+
+  bookingSeats bookingSeat[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, seatCode])
+}
+
+model bookingSeat {
+  id String @id @default(cuid())
+
+  bookingId String
+
+  seatId String
+
+  booking booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  seat seat @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([seatId])
+}
+
+model user {
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique(map: "User_email_key")
+  phoneNumber     String     @unique(map: "User_phoneNumber_key")
+  password        String
+  isEmailVerified Boolean    @default(true)
+  role            user_role  @default(USER)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  booking         booking[]
+  event           event[]
+  emailOtps       EmailOtp[]
+}
+
+model EmailOtp {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String
+  purpose   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+}
+
+enum booking_bookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum user_role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum booking_paymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum event_category {
+  MUSIC
+  CONCERT
+  DANCE
+  DJ_NIGHT
+  COMEDY
+  MOVIE
+  SPORTS
+  CRICKET
+  FOOTBALL
+  WORKSHOP
+  SEMINAR
+  CONFERENCE
+  FESTIVAL
+  THEATRE
+  EXHIBITION
+  FOOD_FEST
+  TECH
+  GAMING
+  CULTURAL
+  COLLEGE
+  KIDS
+  OTHER
+}
+
+enum event_language {
+  TAMIL
+  ENGLISH
+  HINDI
+  TELUGU
+  MALAYALAM
+  KANNADA
+  MULTI_LANGUAGE
+}
+
+enum event_status {
+  UPCOMING
+  LIVE
+  COMPLETED
+  CANCELLED
 }

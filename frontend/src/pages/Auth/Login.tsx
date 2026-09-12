@@ -1,149 +1,245 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import API from "../../api/axios";
+import API from "../../api/userAPI";
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, Ticket, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Ticket, Loader2 } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
   const onSubmit = async (data: any) => {
     try {
       const res = await API.post("/auth/login", data);
+
+      console.log("Login Response:", res.data);
+
       localStorage.setItem("token", res.data.token);
+
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      
-      toast.success(res.data.message || "Welcome back!", { 
-        style: { background: '#10B981', color: '#FFF', borderRadius: '12px' } 
+
+      toast.success(res.data.message || "Login Successful!", {
+        style: {
+          background: "#12B76A",
+          color: "#FFF",
+          borderRadius: "12px",
+        },
       });
-      
-      if (res.data.user.role === 'ADMIN' || res.data.user.role === 'SUPER_ADMIN') {
-        navigate("/admin/dashboard");
-      } else {
+
+      const user = res.data.user;
+
+      // Navigate based on role
+      if (user.role === "USER") {
         navigate("/");
+      } else {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        toast.error("Please use the correct login page.");
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Login Failed", { 
-        style: { background: '#EF4444', color: '#FFF', borderRadius: '12px' } 
-      });
+     
+      console.error("Login Error:", err);
+
+      if (err.response) {
+        console.log("Response:", err.response.data);
+
+        const errorData = err.response.data;
+
+        // Email verification required
+        if (errorData.requiresEmailVerification) {
+          toast.error(
+            errorData.message || "Please verify your email before logging in.",
+            {
+              style: {
+                background: "#F04438",
+                color: "#FFF",
+                borderRadius: "12px",
+              },
+            },
+          );
+
+          navigate("/verify-email", {
+            state: {
+              email: data.email,
+            },
+          });
+
+          return;
+        }
+
+        toast.error(errorData.message || "Login Failed", {
+          style: {
+            background: "#F04438",
+            color: "#FFF",
+            borderRadius: "12px",
+          },
+        });
+      } else if (err.request) {
+        toast.error("Cannot connect to server", {
+          style: {
+            background: "#F04438",
+            color: "#FFF",
+            borderRadius: "12px",
+          },
+        });
+      } else {
+        toast.error(err.message || "Something went wrong", {
+          style: {
+            background: "#F04438",
+            color: "#FFF",
+            borderRadius: "12px",
+          },
+        });
+      }
     }
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#090D16] text-white p-4 sm:p-6 overflow-hidden">
-      {/* Background Ambient Glows */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293712_1px,transparent_1px),linear-gradient(to_bottom,#1f293712_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+    <div className="relative min-h-screen flex items-center justify-center bg-[#F8F9FC] p-4 sm:p-6 overflow-hidden font-sans">
+      {/* Background Dot Pattern */}
+      <div
+        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#d1d5db 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
 
-      <motion.div 
-        initial={{ opacity: 0, y: 25, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative w-full max-w-md bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
+      {/* Decorative Floating Elements */}
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
+        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+        className="absolute hidden md:flex top-1/4 left-[15%] w-16 h-16 bg-[#FFFFFF] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] items-center justify-center z-0 border border-gray-100"
       >
-        {/* Ticket Top Accent Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-400" />
+        <Ticket className="w-8 h-8 text-[#6C5CE7]" />
+      </motion.div>
 
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+        className="absolute hidden md:flex bottom-1/3 right-[15%] w-14 h-14 bg-[#FFFFFF] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] items-center justify-center z-0 border border-gray-100"
+      >
+        <Lock className="w-6 h-6 text-[#00B4D8]" />
+      </motion.div>
+
+      {/* Main Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-[420px] bg-[#FFFFFF] rounded-[32px] p-8 sm:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.04)] border border-gray-100"
+      >
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-tr from-purple-600 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/25 mb-4">
-            <Ticket className="w-7 h-7 text-white -rotate-12" />
+          <div className="w-14 h-14 bg-[#6C5CE7]/10 rounded-2xl flex items-center justify-center mb-4">
+            <Ticket className="w-7 h-7 text-[#6C5CE7]" />
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-2">
-            <Sparkles className="w-3.5 h-3.5" /> Event Pass Portal
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Welcome Back</h1>
-          <p className="text-slate-400 text-sm mt-1">Sign in to manage and claim your event tickets</p>
+          <h1 className="text-[28px] font-[800] tracking-tight text-[#172033] mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-[#667085] font-[600] text-sm">
+            Sign in to manage and claim your event tickets
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Email Field */}
           <div>
-            <label className="block text-xs font-semibold tracking-wider text-slate-300 uppercase mb-2">
-              Email Address
-            </label>
             <div className="relative flex items-center">
-              <Mail className="absolute left-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
+              <Mail className="absolute left-4 w-5 h-5 text-[#667085] pointer-events-none" />
               <input
                 type="email"
-                placeholder="developer@example.com"
+                placeholder="Your Email"
                 {...register("email", { required: "Email is required" })}
-                className={`w-full bg-slate-950/60 border rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-slate-500 outline-none transition-all duration-200 ${
-                  errors.email 
-                    ? 'border-red-500/80 focus:border-red-500 ring-2 ring-red-500/20' 
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 hover:border-slate-700'
-                }`}
+                className={`w-full bg-[#F8F9FC] border ${
+                  errors.email ? "border-[#F04438]" : "border-transparent"
+                } rounded-[16px] pl-12 pr-4 py-4 text-sm text-[#172033] font-[500] placeholder:text-[#667085] placeholder:font-[400] outline-none transition-all duration-200 focus:bg-[#FFFFFF] focus:border-[#6C5CE7] focus:ring-4 focus:ring-[#6C5CE7]/10`}
               />
             </div>
             {errors.email && (
-              <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.email?.message as string}</p>
+              <p className="text-[#F04438] text-xs mt-1.5 ml-1 font-[500]">
+                {errors.email.message as string}
+              </p>
             )}
           </div>
 
           {/* Password Field */}
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-xs font-semibold tracking-wider text-slate-300 uppercase">
-                Password
-              </label>
-              <a href="#" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">
-                Forgot password?
-              </a>
-            </div>
             <div className="relative flex items-center">
-              <Lock className="absolute left-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
+              <Lock className="absolute left-4 w-5 h-5 text-[#667085] pointer-events-none" />
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
+                placeholder="Your Password"
                 {...register("password", { required: "Password is required" })}
-                className={`w-full bg-slate-950/60 border rounded-xl pl-11 pr-11 py-3.5 text-sm text-white placeholder-slate-500 outline-none transition-all duration-200 ${
-                  errors.password 
-                    ? 'border-red-500/80 focus:border-red-500 ring-2 ring-red-500/20' 
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 hover:border-slate-700'
-                }`}
+                className={`w-full bg-[#F8F9FC] border ${
+                  errors.password ? "border-[#F04438]" : "border-transparent"
+                } rounded-[16px] pl-12 pr-12 py-4 text-sm text-[#172033] font-[500] placeholder:text-[#667085] placeholder:font-[400] outline-none transition-all duration-200 focus:bg-[#FFFFFF] focus:border-[#6C5CE7] focus:ring-4 focus:ring-[#6C5CE7]/10`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 text-slate-400 hover:text-slate-200 transition-colors focus:outline-none"
+                className="absolute right-4 text-[#667085] hover:text-[#6C5CE7] transition-colors focus:outline-none"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.password?.message as string}</p>
+              <p className="text-[#F04438] text-xs mt-1.5 ml-1 font-[500]">
+                {errors.password.message as string}
+              </p>
             )}
+
+            {/* Forgot Password */}
+            <div className="flex justify-end mt-2">
+              <Link
+                to="/forgot-password"
+                className="text-sm font-[600] text-[#667085] hover:text-[#6C5CE7] transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full group bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-500 hover:from-purple-500 hover:to-indigo-400 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-300 active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed mt-2 flex items-center justify-center gap-2"
+            className="w-full bg-[#6C5CE7] hover:bg-[#4834D4] text-[#FFFFFF] font-[600] py-4 px-4 rounded-[16px] transition-all duration-200 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(108,92,231,0.25)]"
           >
             {isSubmitting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Authenticating...</span>
-              </>
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <>
-                <span>Log in to Account</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </>
+              <span>Log In</span>
             )}
           </button>
         </form>
 
-        <p className="text-center mt-8 text-sm text-slate-400">
+        <div className="mt-8 relative flex items-center justify-center">
+          <span className="bg-[#FFFFFF] px-4 text-sm text-[#667085] font-[500] z-10 relative">
+            Or continue with
+          </span>
+          <div className="absolute w-full h-px bg-gray-200 left-0 top-1/2 -translate-y-1/2"></div>
+        </div>
+
+        <p className="text-center mt-6 text-sm text-[#667085] font-[500]">
           Don't have an account?{" "}
-          <Link to="/register" className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors underline-offset-4 hover:underline">
-            Sign up now
+          <Link
+            to="/register"
+            className="text-[#172033] font-[700] hover:text-[#6C5CE7] transition-colors hover:underline"
+          >
+            Sign up
           </Link>
         </p>
       </motion.div>
