@@ -9,7 +9,8 @@ import {
   Ticket, 
   Activity, 
   AlertCircle,
-  Loader2
+  Loader2,
+  ChevronRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { 
@@ -28,7 +29,6 @@ import API from '../../api/adminAPI';
 // --- Interfaces ---
 interface DashboardStats {
   totalEvents: number;
-  publishedEvents: number;
   totalCapacity: number;
   ticketsSold: number;
   totalBookings: number;
@@ -38,20 +38,22 @@ interface DashboardStats {
 interface EventPerformance {
   id: string;
   title: string;
-  capacity: number;
-  sold: number;
+  totalTickets: number;
+  soldTickets: number;
   revenue: number;
+  status: string;
   date: string;
+  soldPercentage: number;
 }
 
 interface Booking {
   id: string;
   ticketNumber: string;
-  customerName: string;
-  customerEmail: string;
+  customer: { name: string; email: string };
   amount: number;
   date: string;
   status: string;
+  bookingStatus: string;
 }
 
 interface ChartData {
@@ -61,14 +63,18 @@ interface ChartData {
 }
 
 const DashboardOverview = () => {
+  // ONLY ONE DECLARATION OF isLoading
   const [isLoading, setIsLoading] = useState(true);
   
   // State for all dashboard sections
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [eventPerformance, setEventPerformance] = useState<EventPerformance[]>([]);
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
+  const [almostSoldOut, setAlmostSoldOut] = useState<EventPerformance[]>([]);
   const [revenueData, setRevenueData] = useState<ChartData[]>([]);
   const [bookingData, setBookingData] = useState<ChartData[]>([]);
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // Fetch all dashboard data
   useEffect(() => {
@@ -77,38 +83,34 @@ const DashboardOverview = () => {
         setIsLoading(true);
         const headers = { Authorization: `Bearer ${localStorage.getItem("adminToken")}` };
         
-        const response = await API.get('/admin/dashboard-stats', { headers }).catch(() => null);
+        // Fetching from your exact backend route
+        const response = await API.get('/admin/dashboard', { headers });
 
-        if (response && response.data) {
-          const { data } = response.data;
-          setStats(data.stats);
-          setEventPerformance(data.performance);
-          setRecentBookings(data.recentBookings);
-          setRevenueData(data.revenueChart);
-          setBookingData(data.bookingChart);
-        } else {
-          // FALLBACK MOCK DATA
-          setStats({ totalEvents: 12, publishedEvents: 8, totalCapacity: 2500, ticketsSold: 1248, totalBookings: 345, totalRevenue: 842500 });
-          setRevenueData([
-            { name: 'Jan', revenue: 40000 }, { name: 'Feb', revenue: 65000 }, { name: 'Mar', revenue: 120000 },
-            { name: 'Apr', revenue: 180000 }, { name: 'May', revenue: 240000 }, { name: 'Jun', revenue: 450000 }
-          ]);
-          setBookingData([
-            { name: 'Mon', bookings: 12 }, { name: 'Tue', bookings: 25 }, { name: 'Wed', bookings: 18 },
-            { name: 'Thu', bookings: 40 }, { name: 'Fri', bookings: 85 }, { name: 'Sat', bookings: 120 }, { name: 'Sun', bookings: 45 }
-          ]);
-          setEventPerformance([
-            { id: '1', title: 'Vijay Antony Live', capacity: 500, sold: 320, revenue: 450000, date: '2026-09-30' },
-            { id: '2', title: 'Music Festival', capacity: 1000, sold: 780, revenue: 780000, date: '2026-10-05' },
-            { id: '3', title: 'Tech Conference', capacity: 300, sold: 295, revenue: 442500, date: '2026-11-12' },
-            { id: '4', title: 'Comedy Night', capacity: 250, sold: 230, revenue: 120000, date: '2026-12-01' },
-          ]);
-          setRecentBookings([
-            { id: '1', ticketNumber: 'EVT-2026-001', customerName: 'Prasanth', customerEmail: 'prasanth@example.com', amount: 9463, date: '2026-09-11', status: 'CONFIRMED' },
-            { id: '2', ticketNumber: 'EVT-2026-002', customerName: 'Rahul', customerEmail: 'rahul@example.com', amount: 4000, date: '2026-09-11', status: 'CONFIRMED' },
-            { id: '3', ticketNumber: 'EVT-2026-003', customerName: 'Anitha', customerEmail: 'anitha@example.com', amount: 2000, date: '2026-09-10', status: 'PENDING' },
-            { id: '4', ticketNumber: 'EVT-2026-004', customerName: 'Karthik', customerEmail: 'karthik@example.com', amount: 3500, date: '2026-09-09', status: 'CONFIRMED' },
-          ]);
+        if (response && response.data && response.data.success) {
+          const { summary, eventPerformance, recentBookings, almostSoldOut, revenueByMonth, bookingsByDay } = response.data.data;
+          
+          setStats({
+            totalEvents: summary.totalEvents,
+            totalCapacity: summary.totalTickets,
+            ticketsSold: summary.ticketsSold,
+            totalBookings: summary.totalBookings,
+            totalRevenue: summary.totalRevenue
+          });
+
+          setEventPerformance(eventPerformance);
+          setRecentBookings(recentBookings);
+          setAlmostSoldOut(almostSoldOut);
+
+          // Map backend charts to Recharts format
+          setRevenueData(revenueByMonth.map((m: any) => ({ 
+            name: monthNames[m.month - 1], 
+            revenue: m.revenue 
+          })));
+
+          setBookingData(bookingsByDay.map((d: any) => ({ 
+            name: d.day, 
+            bookings: d.bookings 
+          })));
         }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
@@ -122,27 +124,14 @@ const DashboardOverview = () => {
 
   if (isLoading || !stats) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#F8F9FC]">
+      <div className="flex h-[80vh] items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-[#6C5CE7]" />
       </div>
     );
   }
 
-  // --- Derived Data ---
-  // Helper to determine status based on sales percentage
-  const getEventStatus = (sold: number, capacity: number) => {
-    if (capacity === 0) return { label: 'N/A', color: 'bg-gray-100 text-gray-700' };
-    const percentage = (sold / capacity) * 100;
-    if (percentage >= 100) return { label: 'Sold Out', color: 'bg-red-100 text-red-700' };
-    if (percentage >= 80) return { label: 'Selling Fast', color: 'bg-amber-100 text-amber-700' };
-    return { label: 'Available', color: 'bg-green-100 text-green-700' };
-  };
-
-  // Filter events that are nearly sold out (between 80% and 99% sold)
-  const almostSoldOutEvents = [...eventPerformance]
-    .map(evt => ({ ...evt, percentage: Math.round((evt.sold / evt.capacity) * 100) }))
-    .filter(evt => evt.percentage >= 80 && evt.percentage < 100)
-    .sort((a, b) => b.percentage - a.percentage);
+  // Calculate top performing events sorted by revenue
+  const topEvents = [...eventPerformance].sort((a, b) => b.revenue - a.revenue).slice(0, 3);
 
   // --- Animation Variants ---
   const containerVariants = {
@@ -293,22 +282,34 @@ const DashboardOverview = () => {
                 <th className="px-6 py-4">Sold</th>
                 <th className="px-6 py-4">Revenue</th>
                 <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {eventPerformance.map((evt) => {
-                const statusInfo = getEventStatus(evt.sold, evt.capacity);
                 return (
                   <tr key={evt.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 font-bold text-gray-900">{evt.title}</td>
                     <td className="px-6 py-4 text-gray-900 font-bold">
-                      {evt.sold}<span className="text-gray-400 font-medium">/{evt.capacity}</span>
+                      {evt.soldTickets}<span className="text-gray-400 font-medium">/{evt.totalTickets}</span>
                     </td>
                     <td className="px-6 py-4 font-[800] text-gray-900">₹{evt.revenue.toLocaleString()}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${statusInfo.color}`}>
-                        {statusInfo.label}
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
+                         evt.status === 'SOLD_OUT' ? 'bg-red-100 text-red-700' :
+                         evt.status === 'SELLING_FAST' ? 'bg-amber-100 text-amber-700' :
+                         'bg-green-100 text-green-700'
+                      }`}>
+                        {evt.status.replace("_", " ")}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <Link 
+                        to={`/admin/events/${evt.id}`}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#6C5CE7] bg-[#6C5CE7]/10 hover:bg-[#6C5CE7]/20 rounded-lg transition-colors"
+                      >
+                        Details <ChevronRight size={14} />
+                      </Link>
                     </td>
                   </tr>
                 );
@@ -325,7 +326,7 @@ const DashboardOverview = () => {
         
         {/* Recent Bookings List */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
-          <div className="px-6 py-6 border-b border-gray-50">
+          <div className="px-6 py-6 border-b border-gray-50 flex justify-between items-center">
             <h3 className="text-lg font-bold text-gray-900">Recent Bookings</h3>
           </div>
           
@@ -335,16 +336,16 @@ const DashboardOverview = () => {
                 {recentBookings.slice(0, 4).map((booking) => (
                   <tr key={booking.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
-                      <p className="font-bold text-gray-900">{booking.customerName}</p>
+                      <p className="font-bold text-gray-900">{booking.customer.name}</p>
                     </td>
                     <td className="px-6 py-4 font-[800] text-gray-900">
                       ₹{booking.amount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
-                        booking.status === 'CONFIRMED' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'
+                        booking.bookingStatus === 'CONFIRMED' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'
                       }`}>
-                        {booking.status}
+                        {booking.bookingStatus}
                       </span>
                     </td>
                   </tr>
@@ -361,22 +362,22 @@ const DashboardOverview = () => {
             <h3 className="text-lg font-bold text-gray-900">Almost Sold Out</h3>
           </div>
           
-          {almostSoldOutEvents.length === 0 ? (
+          {almostSoldOut.length === 0 ? (
             <div className="text-center py-8 text-sm text-gray-500 font-medium bg-gray-50 rounded-2xl border border-dashed border-gray-200">
               No events are currently near capacity.
             </div>
           ) : (
             <div className="space-y-5">
-              {almostSoldOutEvents.map((evt) => (
+              {almostSoldOut.map((evt) => (
                 <div key={evt.id} className="flex flex-col gap-2">
                   <div className="flex justify-between items-end">
                     <h4 className="font-bold text-gray-900">{evt.title}</h4>
-                    <span className="font-[800] text-[#172033]">{evt.percentage}%</span>
+                    <span className="font-[800] text-[#172033]">{evt.soldPercentage}%</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
-                      whileInView={{ width: `${evt.percentage}%` }}
+                      whileInView={{ width: `${evt.soldPercentage}%` }}
                       viewport={{ once: true }}
                       transition={{ duration: 1, ease: "easeOut" }}
                       className="bg-amber-400 h-full rounded-full" 

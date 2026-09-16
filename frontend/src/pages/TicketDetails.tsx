@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import API from "../api/userAPI";
+import { ArrowLeft, Download, ZoomIn, X, CircleAlert } from "lucide-react";
 
 interface SeatDetail {
   seat: {
@@ -93,26 +94,26 @@ const TicketDetails = () => {
     window.print();
   };
 
+  // ================= LOADING STATE =================
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8F9FC] font-sans">
-        <div className="w-16 h-16 border-4 border-[#6C5CE7]/20 border-t-[#6C5CE7] rounded-full animate-spin"></div>
-        <p className="mt-4 text-[#667085] font-[600]">Retrieving your ticket...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#020617] font-sans">
+        <div className="w-16 h-16 border-4 border-[#1E293B] border-t-[#6C5CE7] rounded-full animate-spin shadow-[0_0_15px_rgba(108,92,231,0.5)]"></div>
+        <p className="mt-6 text-[#94A3B8] font-[700] uppercase tracking-widest text-sm">Retrieving your ticket...</p>
       </div>
     );
   }
 
+  // ================= ERROR STATE =================
   if (error || !bookingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FC] px-4 font-sans">
-        <div className="max-w-md w-full bg-[#FFFFFF] p-10 rounded-[2rem] shadow-sm border border-gray-100 text-center">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-[#F04438]/10 mb-6">
-            <svg className="h-10 w-10 text-[#F04438]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
+      <div className="min-h-screen flex items-center justify-center bg-[#020617] px-4 font-sans">
+        <div className="max-w-md w-full bg-[#0F172A] p-10 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-[#1E293B] text-center">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-[#F43F5E]/10 mb-6 border border-[#F43F5E]/20 shadow-[0_0_15px_rgba(244,63,94,0.2)]">
+            <CircleAlert className="h-10 w-10 text-[#F43F5E]" />
           </div>
-          <h2 className="text-2xl font-[800] text-[#172033]">{error || "Ticket not found"}</h2>
-          <Link to="/dashboard" className="mt-8 w-full flex justify-center py-3.5 px-4 rounded-xl text-sm font-[700] text-[#FFFFFF] bg-[#6C5CE7] hover:bg-[#4834D4] transition-all shadow-[0_8px_20px_rgba(108,92,231,0.25)]">
+          <h2 className="text-2xl font-[900] text-[#F8FAFC] tracking-tight">{error || "Ticket not found"}</h2>
+          <Link to="/dashboard" className="mt-8 w-full flex justify-center py-4 px-4 rounded-xl text-sm font-[800] uppercase tracking-wider text-[#FFFFFF] bg-[#6C5CE7] hover:bg-[#5A4BCF] transition-all shadow-[0_0_20px_rgba(108,92,231,0.4)]">
             Return to Dashboard
           </Link>
         </div>
@@ -120,120 +121,143 @@ const TicketDetails = () => {
     );
   }
 
+  // ================= SUCCESS STATE (THE TICKET) =================
   return (
-    <div className="min-h-screen bg-[#F8F9FC] py-12 px-4 sm:px-6 lg:px-8 font-sans flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-[#020617] py-24 px-4 sm:px-6 lg:px-8 font-sans flex flex-col items-center justify-center relative overflow-hidden">
       
+      {/* Ambient Neon Glows */}
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#6C5CE7]/10 rounded-full blur-[150px] pointer-events-none print:hidden" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#00B4D8]/10 rounded-full blur-[150px] pointer-events-none print:hidden" />
+
       {/* ---------------- QR CODE FULLSCREEN MODAL ---------------- */}
       {isQrModalOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 print:hidden animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#020617]/90 backdrop-blur-xl p-4 print:hidden"
           onClick={() => setIsQrModalOpen(false)} 
         >
           <div 
-            className="bg-[#FFFFFF] rounded-3xl p-8 max-w-sm w-full shadow-2xl flex flex-col items-center transform transition-transform scale-100 animate-scale-up relative"
+            className="bg-[#0F172A] border border-[#1E293B] rounded-[2.5rem] p-8 max-w-sm w-full shadow-[0_0_50px_rgba(108,92,231,0.2)] flex flex-col items-center relative"
             onClick={(e) => e.stopPropagation()} 
           >
             {/* Close Button */}
             <button 
               onClick={() => setIsQrModalOpen(false)}
-              className="absolute top-4 right-4 bg-[#F8F9FC] hover:bg-gray-200 text-[#667085] hover:text-[#172033] rounded-full p-2 transition-colors focus:outline-none"
+              className="absolute top-4 right-4 bg-[#1E293B] hover:bg-[#334155] text-[#94A3B8] hover:text-[#F8FAFC] rounded-full p-2 transition-colors focus:outline-none"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
+              <X className="w-5 h-5" />
             </button>
             
-            <h3 className="text-xl font-[800] text-[#172033] mb-6 tracking-tight">Scan at Entry</h3>
-            <div className="p-4 border-2 border-gray-100 rounded-2xl shadow-inner bg-[#F8F9FC] mb-4 w-full aspect-square flex items-center justify-center">
-              <img src={bookingData.qrCode} alt="Enlarged QR Code" className="w-full h-full object-contain mix-blend-multiply" />
+            <h3 className="text-xl font-[900] text-[#F8FAFC] mb-6 tracking-tight drop-shadow-md">Scan at Entry</h3>
+            
+            {/* QR Container with White Background for Scanner Readability */}
+            <div className="p-4 border-[4px] border-[#6C5CE7]/50 rounded-[2rem] shadow-[0_0_30px_rgba(108,92,231,0.3)] bg-white mb-6 w-full aspect-square flex items-center justify-center relative">
+              {/* Corner Accents */}
+              <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-[#6C5CE7] rounded-tl-[1.8rem]"></div>
+              <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-[#6C5CE7] rounded-tr-[1.8rem]"></div>
+              <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-[#6C5CE7] rounded-bl-[1.8rem]"></div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-[#6C5CE7] rounded-br-[1.8rem]"></div>
+              
+              <img src={bookingData.qrCode} alt="Enlarged QR Code" className="w-full h-full object-contain" />
             </div>
-            <p className="text-sm font-[700] text-[#667085] uppercase tracking-widest">{bookingData.ticketNumber}</p>
+            
+            <div className="bg-[#1E293B] px-4 py-2 rounded-lg border border-[#334155]">
+              <p className="text-sm font-[800] text-[#00B4D8] uppercase tracking-[0.2em]">{bookingData.ticketNumber}</p>
+            </div>
           </div>
         </div>
       )}
 
       {/* ---------------- ACTION BAR (Hidden on Print) ---------------- */}
-      <div className="w-full max-w-md flex justify-between items-center mb-6 print:hidden">
-        <Link to="/dashboard" className="flex items-center text-sm font-[700] text-[#667085] hover:text-[#6C5CE7] transition-colors">
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-          Back to Dashboard
+      <div className="w-full max-w-md flex justify-between items-center mb-6 print:hidden relative z-10">
+        <Link to="/dashboard" className="flex items-center gap-2 text-sm font-[800] uppercase tracking-wider text-[#94A3B8] hover:text-[#6C5CE7] transition-colors group">
+          <div className="w-8 h-8 rounded-full bg-[#0F172A] border border-[#1E293B] flex items-center justify-center group-hover:border-[#6C5CE7]/50 transition-colors">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          </div>
+          Dashboard
         </Link>
         <button 
           onClick={handlePrint}
-          className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] text-[#172033] border border-gray-200 rounded-lg shadow-sm hover:bg-[#F8F9FC] text-sm font-[700] transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#0F172A] hover:bg-[#1E293B] text-[#F8FAFC] border border-[#1E293B] hover:border-[#6C5CE7]/50 rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)] text-xs font-[800] uppercase tracking-wider transition-all"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <Download className="w-4 h-4 text-[#00B4D8]" />
           Save PDF
         </button>
       </div>
 
       {/* ---------------- THE DIGITAL TICKET ---------------- */}
-      <div className="w-full max-w-md bg-[#FFFFFF] rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] overflow-hidden relative print:shadow-none print:border print:border-gray-300">
+      <div className="w-full max-w-md bg-[#0F172A] rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden relative border border-[#1E293B] print:shadow-none print:border print:border-gray-300 z-10">
         
         {/* Top Banner with Image */}
-        <div className="relative h-56 w-full bg-[#F8F9FC]">
+        <div className="relative h-64 w-full bg-[#020617]">
           {bookingData.event.image ? (
-            <img src={bookingData.event.image} alt={bookingData.event.title} className="w-full h-full object-cover" />
+            <img src={bookingData.event.image} alt={bookingData.event.title} className="w-full h-full object-cover opacity-80" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-tr from-[#6C5CE7] to-[#00B4D8]"></div>
+            <div className="w-full h-full bg-gradient-to-tr from-[#6C5CE7] to-[#00B4D8] opacity-80"></div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          {/* Gradient overlay to blend with dark ticket body */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent"></div>
           
           {/* Status Badge */}
-          <div className={`absolute top-5 right-5 backdrop-blur-sm text-[#FFFFFF] flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-md ${bookingData.bookingStatus === 'CONFIRMED' ? 'bg-[#12B76A]/90' : 'bg-[#00B4D8]/90'}`}>
-            <span className="text-xs font-[700] uppercase tracking-wider">{bookingData.bookingStatus}</span>
+          <div className={`absolute top-6 right-6 backdrop-blur-md border px-4 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] ${
+            bookingData.bookingStatus === 'CONFIRMED' 
+              ? 'bg-[#10B981]/20 border-[#10B981]/50 text-[#10B981]' 
+              : 'bg-[#00B4D8]/20 border-[#00B4D8]/50 text-[#00B4D8]'
+          }`}>
+            <span className="text-[10px] font-[900] uppercase tracking-[0.15em]">{bookingData.bookingStatus}</span>
           </div>
 
           {/* Event Title */}
-          <div className="absolute bottom-4 left-6 right-6 text-[#FFFFFF]">
-            <h2 className="text-2xl font-[800] leading-tight drop-shadow-md">{bookingData.event.title}</h2>
+          <div className="absolute bottom-6 left-8 right-8 text-[#F8FAFC]">
+            <h2 className="text-3xl font-[900] leading-tight tracking-tight drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+              {bookingData.event.title}
+            </h2>
           </div>
         </div>
 
         {/* Ticket Body */}
-        <div className="p-6">
+        <div className="p-8">
           
           {/* Date & Venue Row */}
-          <div className="flex justify-between items-start text-sm mb-6">
+          <div className="flex justify-between items-start text-sm mb-8 border-b border-[#1E293B] pb-8">
             <div className="flex flex-col">
-              <span className="text-[#667085] font-[700] uppercase tracking-widest text-[10px] mb-1">Date & Time</span>
-              <span className="font-[800] text-[#172033]">
+              <span className="text-[#64748B] font-[800] uppercase tracking-widest text-[10px] mb-1.5">Date & Time</span>
+              <span className="font-[900] text-[#F8FAFC] text-base mb-0.5">
                 {new Date(bookingData.event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
-              <span className="text-[#667085] font-[600]">{bookingData.event.time}</span>
+              <span className="text-[#00B4D8] font-[700] text-sm">{bookingData.event.time}</span>
             </div>
             <div className="flex flex-col text-right">
-              <span className="text-[#667085] font-[700] uppercase tracking-widest text-[10px] mb-1">Venue</span>
-              <span className="font-[800] text-[#172033]">{bookingData.event.venue}</span>
-              <span className="text-[#667085] font-[600]">{bookingData.event.location}</span>
+              <span className="text-[#64748B] font-[800] uppercase tracking-widest text-[10px] mb-1.5">Venue</span>
+              <span className="font-[900] text-[#F8FAFC] text-base mb-0.5">{bookingData.event.venue}</span>
+              <span className="text-[#94A3B8] font-[600] text-xs">{bookingData.event.location}</span>
             </div>
           </div>
 
           {/* Attendee Info */}
-          <div className="bg-[#F8F9FC] rounded-xl p-4 mb-6 border border-gray-100 flex justify-between items-center">
+          <div className="bg-[#020617] rounded-2xl p-5 mb-8 border border-[#1E293B] shadow-inner flex justify-between items-center">
             <div>
-              <span className="text-[#667085] font-[700] uppercase tracking-widest text-[10px] block mb-1">Ticket Holder</span>
-              <span className="font-[800] text-[#172033]">{bookingData.user.name}</span>
+              <span className="text-[#64748B] font-[800] uppercase tracking-widest text-[10px] block mb-1">Ticket Holder</span>
+              <span className="font-[900] text-[#F8FAFC] text-lg tracking-tight">{bookingData.user.name}</span>
             </div>
             <div className="text-right">
-              <span className="text-[#667085] font-[700] uppercase tracking-widest text-[10px] block mb-1">Total Amount</span>
-              <span className="font-[800] text-[#6C5CE7]">₹{bookingData.totalAmount}</span>
+              <span className="text-[#64748B] font-[800] uppercase tracking-widest text-[10px] block mb-1">Total Amount</span>
+              <span className="font-[900] text-[#6C5CE7] text-xl">₹{bookingData.totalAmount}</span>
             </div>
           </div>
 
-          {/* Perforated Ticket Line */}
-          <div className="relative flex items-center justify-center my-6">
-            <div className="absolute w-8 h-8 bg-[#F8F9FC] print:bg-white rounded-full -left-10 shadow-inner"></div>
-            <div className="absolute w-8 h-8 bg-[#F8F9FC] print:bg-white rounded-full -right-10 shadow-inner"></div>
-            <div className="w-full border-t-2 border-dashed border-gray-200"></div>
+          {/* Perforated Ticket Line (The tear-off effect) */}
+          <div className="relative flex items-center justify-center my-8">
+            <div className="absolute w-8 h-8 bg-[#020617] print:bg-white rounded-full -left-12 shadow-[inset_-4px_0_8px_rgba(0,0,0,0.5)]"></div>
+            <div className="absolute w-8 h-8 bg-[#020617] print:bg-white rounded-full -right-12 shadow-[inset_4px_0_8px_rgba(0,0,0,0.5)]"></div>
+            <div className="w-full border-t-[3px] border-dashed border-[#1E293B]"></div>
           </div>
 
           {/* QR Code & ID Row */}
-          <div className="flex flex-row justify-between items-center mb-6">
+          <div className="flex flex-row justify-between items-center mb-8">
             <div className="flex flex-col gap-4">
               <div>
-                <span className="text-[#667085] font-[700] uppercase tracking-widest text-[10px] block mb-1">Ticket ID</span>
-                <span className="font-mono font-[700] text-[#172033] bg-[#F8F9FC] px-2.5 py-1 rounded-md text-sm border border-gray-100">
+                <span className="text-[#64748B] font-[800] uppercase tracking-widest text-[10px] block mb-2">Ticket ID</span>
+                <span className="font-mono font-[800] text-[#F8FAFC] bg-[#1E293B]/50 px-3 py-1.5 rounded-lg text-sm border border-[#334155] shadow-inner">
                   {bookingData.ticketNumber}
                 </span>
               </div>
@@ -242,32 +266,32 @@ const TicketDetails = () => {
             {/* CLICKABLE QR CODE */}
             <div 
               onClick={() => setIsQrModalOpen(true)}
-              className="flex flex-col items-center bg-[#FFFFFF] p-2.5 rounded-xl border border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-[#6C5CE7]/40 transition-all group"
+              className="flex flex-col items-center bg-white p-2 rounded-2xl shadow-[0_0_20px_rgba(108,92,231,0.2)] cursor-pointer hover:shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all group relative"
             >
-              <img src={bookingData.qrCode} alt="QR Code" className="w-24 h-24 rounded-lg group-hover:opacity-90 transition-opacity" />
-              <div className="flex items-center gap-1 mt-2 text-[#6C5CE7]">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
-                <span className="text-[9px] font-[800] uppercase tracking-[0.2em]">Tap to enlarge</span>
+              <img src={bookingData.qrCode} alt="QR Code" className="w-24 h-24 rounded-xl mix-blend-multiply" />
+              <div className="absolute -bottom-3 bg-[#0F172A] border border-[#1E293B] px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                <ZoomIn className="w-3 h-3 text-[#6C5CE7]" />
+                <span className="text-[8px] font-[800] text-[#F8FAFC] uppercase tracking-[0.2em]">Enlarge</span>
               </div>
             </div>
           </div>
 
           {/* Seats Booked Section */}
-          <div>
-            <span className="text-[#667085] font-[700] uppercase tracking-widest text-[10px] block mb-2">Reserved Seats</span>
-            <div className="flex flex-wrap gap-2">
+          <div className="bg-[#1E293B]/30 p-4 rounded-2xl border border-[#1E293B]">
+            <span className="text-[#64748B] font-[800] uppercase tracking-widest text-[10px] block mb-3">Reserved Seats</span>
+            <div className="flex flex-wrap gap-2.5">
               {bookingData.seats.map((s, idx) => (
-                <div key={idx} className="flex items-center gap-2 bg-[#6C5CE7]/10 border border-[#6C5CE7]/20 px-3 py-1.5 rounded-lg shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-[#6C5CE7]"></div>
-                  <span className="text-xs font-[700] text-[#172033]">{s.seat.category.name}</span>
-                  <span className="text-xs font-[700] text-[#6C5CE7] border-l border-[#6C5CE7]/20 pl-2">{s.seat.seatCode}</span>
+                <div key={idx} className="flex items-center gap-2.5 bg-[#0F172A] border border-[#334155] px-3 py-2 rounded-xl shadow-sm">
+                  <div className="w-2 h-2 rounded-full bg-[#00B4D8] shadow-[0_0_8px_rgba(0,180,216,0.8)]"></div>
+                  <span className="text-xs font-[800] text-[#94A3B8]">{s.seat.category.name}</span>
+                  <span className="text-xs font-[900] text-[#F8FAFC] border-l border-[#334155] pl-2">{s.seat.seatCode}</span>
                 </div>
               ))}
             </div>
           </div>
+          
         </div>
       </div>
-
     </div>
   );
 };

@@ -28,7 +28,7 @@ const MOCK_ARTISTS = [
 const Artists = () => {
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedArtist, setSelectedArtist] = useState(null);
+  const [selectedArtist, setSelectedArtist] = useState<any>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -64,45 +64,50 @@ const Artists = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-fuchsia-200">
+    // Base Dark Theme Container
+    <div className="min-h-screen bg-[#020617] text-[#F8FAFC] font-sans selection:bg-[#6C5CE7]/30 selection:text-white">
       
       {/* Background Ambient Glows */}
-      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-fuchsia-100/50 rounded-full blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[150px] pointer-events-none" />
+      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-[#6C5CE7]/15 rounded-full blur-[150px] pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-[#00B4D8]/10 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-32 relative z-10">
         
         {/* ================= EDITORIAL HERO ================= */}
         <div className="mb-16 flex flex-col items-start">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-fuchsia-600" />
-            <span className="text-fuchsia-600 text-sm font-semibold tracking-[0.2em] uppercase">Featured Roster</span>
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F43F5E]/10 border border-[#F43F5E]/20 mb-4 shadow-[0_0_15px_rgba(244,63,94,0.15)]">
+            <Activity className="w-4 h-4 text-[#F43F5E] animate-pulse" />
+            <span className="text-[#F43F5E] text-xs font-[800] tracking-widest uppercase">Featured Roster</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6 text-zinc-900">
-            The Sound <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-blue-500">Architects</span>
+          <h1 className="text-5xl md:text-7xl font-[900] tracking-tight leading-none mb-6 text-[#F8FAFC] drop-shadow-md">
+            The Sound <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6C5CE7] to-[#F43F5E] drop-shadow-[0_0_10px_rgba(244,63,94,0.3)]">Architects</span>
           </h1>
-          <p className="text-zinc-500 text-lg md:text-xl max-w-2xl font-light">
+          <p className="text-[#94A3B8] text-lg md:text-xl max-w-2xl font-[500] leading-relaxed">
             Discover the maestros shaping global music. Dive into their discography and catch them live on their upcoming arena tours.
           </p>
         </div>
 
         {/* ================= UNIFIED CONTROL BAR ================= */}
-        <div className="sticky top-6 z-40 mb-12 flex flex-col md:flex-row items-center justify-between gap-4 p-2 bg-zinc-100/80 border border-zinc-200 backdrop-blur-xl rounded-full shadow-lg shadow-zinc-200/50">
+        <div className="sticky top-24 z-40 mb-12 flex flex-col md:flex-row items-center justify-between gap-4 p-2 bg-[#0F172A]/80 border border-[#1E293B] backdrop-blur-xl rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
           
           {/* Tabs */}
           <div className="flex items-center gap-1 w-full md:w-auto p-1">
             <button
               onClick={() => setFilter("all")}
-              className={`px-6 py-3 rounded-full text-sm font-semibold transition-all w-full md:w-auto ${
-                filter === "all" ? 'bg-white text-zinc-900 shadow-sm border border-zinc-200' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-200/50 border border-transparent'
+              className={`px-6 py-3 rounded-full text-sm font-[800] tracking-wider uppercase transition-all w-full md:w-auto ${
+                filter === "all" 
+                  ? 'bg-[#6C5CE7] text-white shadow-[0_0_15px_rgba(108,92,231,0.4)]' 
+                  : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50 border border-transparent'
               }`}
             >
               All Artists
             </button>
             <button
               onClick={() => setFilter("trending")}
-              className={`px-6 py-3 rounded-full text-sm font-semibold transition-all w-full md:w-auto flex items-center justify-center gap-2 ${
-                filter === "trending" ? 'bg-white text-fuchsia-600 shadow-sm border border-fuchsia-100' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-200/50 border border-transparent'
+              className={`px-6 py-3 rounded-full text-sm font-[800] tracking-wider uppercase transition-all w-full md:w-auto flex items-center justify-center gap-2 ${
+                filter === "trending" 
+                  ? 'bg-[#F43F5E] text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]' 
+                  : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50 border border-transparent'
               }`}
             >
               <TrendingUp className="w-4 h-4" /> Trending
@@ -111,24 +116,23 @@ const Artists = () => {
 
           {/* Search */}
           <div className="relative w-full md:w-[350px] mr-2">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search artists..." 
-              className="w-full bg-zinc-200/50 border border-zinc-300 text-zinc-900 placeholder-zinc-500 rounded-full py-3 pl-11 pr-4 focus:outline-none focus:bg-white focus:border-fuchsia-400 transition-colors text-sm shadow-inner"
+              className="w-full bg-[#020617] border border-[#1E293B] text-[#F8FAFC] placeholder-[#64748B] font-[500] rounded-full py-3 pl-11 pr-4 focus:outline-none focus:border-[#6C5CE7]/50 focus:ring-2 focus:ring-[#6C5CE7]/20 transition-all text-sm shadow-inner"
             />
           </div>
         </div>
 
         {/* ================= POSTER GRID ================= */}
-        {/* Adjusted grid-cols to make cards smaller on wider screens */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-7"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-7"
         >
           <AnimatePresence mode="popLayout">
             {filteredArtists.map((artist) => (
@@ -136,40 +140,41 @@ const Artists = () => {
                 variants={itemVariants}
                 key={artist.id}
                 onClick={() => setSelectedArtist(artist)}
-                // Changed to aspect-[4/5], reduced border radius slightly, and set max width
-                className="group relative aspect-[4/5] mx-auto w-full max-w-[320px] rounded-3xl overflow-hidden cursor-pointer bg-zinc-100 ring-1 ring-zinc-200 hover:ring-fuchsia-400/50 transition-all duration-500 shadow-md hover:shadow-xl"
+                className="group relative aspect-[4/5] mx-auto w-full max-w-[320px] rounded-3xl overflow-hidden cursor-pointer bg-[#0F172A] border border-[#1E293B] hover:border-[#6C5CE7]/50 transition-all duration-500 shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(108,92,231,0.25)]"
               >
+                {/* Hover Glow Behind Image */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#6C5CE7] rounded-full blur-[80px] opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none z-0"></div>
+
                 {/* Image */}
                 <img 
                   src={artist.image} 
                   alt={artist.name} 
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0 opacity-90 group-hover:opacity-100"
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0 opacity-80 group-hover:opacity-100 z-10"
                 />
                 
                 {/* Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/80" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/20 via-transparent to-[#020617]/90 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-500 z-10" />
 
                 {/* Content */}
-                <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end transform transition-transform duration-500 translate-y-3 group-hover:translate-y-0">
+                <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col justify-end transform transition-transform duration-500 translate-y-3 group-hover:translate-y-0 z-20">
                   {artist.trending && (
-                    <span className="w-fit bg-white text-fuchsia-600 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest mb-2 shadow-sm">
+                    <span className="w-fit bg-[#F43F5E] text-white px-3 py-1 rounded-full text-[9px] font-[800] uppercase tracking-widest mb-3 shadow-[0_0_10px_rgba(244,63,94,0.5)]">
                       Trending
                     </span>
                   )}
                   
-                  {/* Reduced text sizes to fit smaller cards */}
-                  <h3 className="text-xl font-bold text-white leading-tight mb-1">{artist.name}</h3>
-                  <p className="text-zinc-300 text-xs font-medium mb-3">{artist.genre}</p>
+                  <h3 className="text-xl font-[800] text-[#F8FAFC] leading-tight mb-1 drop-shadow-md group-hover:text-[#6C5CE7] transition-colors">{artist.name}</h3>
+                  <p className="text-[#00B4D8] text-xs font-[700] mb-3">{artist.genre}</p>
                   
                   {/* Hover Reveal Stats */}
                   <div className="h-0 opacity-0 overflow-hidden group-hover:h-auto group-hover:opacity-100 transition-all duration-500 delay-100">
-                    <div className="flex items-center gap-3 pt-3 border-t border-zinc-400/30">
-                      <div className="flex items-center gap-1 text-[11px] text-zinc-200">
-                        <Star className="w-3 h-3 text-yellow-400" /> {artist.followers}
+                    <div className="flex items-center gap-4 pt-3 border-t border-[#334155]">
+                      <div className="flex items-center gap-1.5 text-[11px] font-[600] text-[#E2E8F0]">
+                        <Star className="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" /> {artist.followers}
                       </div>
-                      <div className="flex items-center gap-1 text-[11px] text-zinc-200">
-                        <Calendar className="w-3 h-3 text-blue-300" /> {artist.upcomingShows} Shows
+                      <div className="flex items-center gap-1.5 text-[11px] font-[600] text-[#E2E8F0]">
+                        <Calendar className="w-3.5 h-3.5 text-[#00B4D8]" /> {artist.upcomingShows} Shows
                       </div>
                     </div>
                   </div>
@@ -180,8 +185,10 @@ const Artists = () => {
         </motion.div>
 
         {filteredArtists.length === 0 && (
-          <div className="py-20 text-center text-zinc-500">
-            <p>No artists found matching your criteria.</p>
+          <div className="py-32 text-center bg-[#0F172A] border border-[#1E293B] rounded-[2.5rem] mt-8 shadow-lg">
+            <Music className="w-12 h-12 text-[#334155] mx-auto mb-4" />
+            <h3 className="text-xl font-[800] text-[#F8FAFC] mb-2">No artists found</h3>
+            <p className="text-[#94A3B8] font-[500]">Try adjusting your search criteria.</p>
           </div>
         )}
       </div>
@@ -195,7 +202,7 @@ const Artists = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedArtist(null)}
-              className="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm z-[100] cursor-pointer"
+              className="fixed inset-0 bg-[#020617]/80 backdrop-blur-sm z-[100] cursor-pointer"
             />
 
             <motion.div 
@@ -203,12 +210,12 @@ const Artists = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[480px] bg-white border-l border-zinc-200 z-[110] shadow-2xl overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-full md:w-[480px] bg-[#0F172A] border-l border-[#1E293B] z-[110] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-y-auto"
             >
               
               <button 
                 onClick={() => setSelectedArtist(null)}
-                className="absolute top-6 right-6 z-20 w-10 h-10 bg-white/80 border border-zinc-200 backdrop-blur-md hover:bg-white rounded-full flex items-center justify-center text-zinc-800 transition-all shadow-sm"
+                className="absolute top-6 right-6 z-20 w-10 h-10 bg-[#1E293B]/80 border border-[#334155] backdrop-blur-md hover:bg-[#334155] rounded-full flex items-center justify-center text-[#F8FAFC] transition-all shadow-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -219,44 +226,44 @@ const Artists = () => {
                   alt={selectedArtist.name} 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/50 to-transparent" />
                 
                 <div className="absolute bottom-6 left-8 flex gap-2">
-                  <span className="bg-white/90 backdrop-blur-md border border-zinc-200 text-zinc-800 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
+                  <span className="bg-[#1E293B]/80 backdrop-blur-md border border-[#334155] text-[#F8FAFC] px-4 py-1.5 rounded-full text-xs font-[800] uppercase tracking-wider shadow-sm">
                     {selectedArtist.genre}
                   </span>
                   {selectedArtist.trending && (
-                    <span className="bg-fuchsia-50/90 backdrop-blur-md border border-fuchsia-200 text-fuchsia-600 px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1 shadow-sm">
-                      <TrendingUp className="w-3 h-3" /> Hot
+                    <span className="bg-[#F43F5E]/20 backdrop-blur-md border border-[#F43F5E]/40 text-[#F43F5E] px-4 py-1.5 rounded-full text-xs font-[800] uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+                      <TrendingUp className="w-3.5 h-3.5" /> Hot
                     </span>
                   )}
                 </div>
               </div>
 
               <div className="p-8">
-                <h2 className="text-4xl font-black text-zinc-900 mb-4">{selectedArtist.name}</h2>
-                <p className="text-zinc-600 text-base leading-relaxed mb-8">
+                <h2 className="text-4xl font-[900] text-[#F8FAFC] tracking-tight mb-4 drop-shadow-md">{selectedArtist.name}</h2>
+                <p className="text-[#94A3B8] font-[500] text-base leading-relaxed mb-8">
                   {selectedArtist.tagline}
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 mb-10">
-                  <div className="bg-zinc-50 border border-zinc-100 p-5 rounded-2xl shadow-sm">
-                    <div className="text-3xl font-bold text-zinc-900 mb-1">{selectedArtist.followers}</div>
-                    <div className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">Listeners</div>
+                  <div className="bg-[#1E293B]/40 border border-[#334155] p-5 rounded-2xl shadow-inner">
+                    <div className="text-3xl font-[900] text-[#F8FAFC] mb-1">{selectedArtist.followers}</div>
+                    <div className="text-xs text-[#64748B] uppercase tracking-widest font-[800]">Listeners</div>
                   </div>
-                  <div className="bg-zinc-50 border border-zinc-100 p-5 rounded-2xl shadow-sm">
-                    <div className="text-3xl font-bold text-zinc-900 mb-1">{selectedArtist.upcomingShows}</div>
-                    <div className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">Shows</div>
+                  <div className="bg-[#1E293B]/40 border border-[#334155] p-5 rounded-2xl shadow-inner">
+                    <div className="text-3xl font-[900] text-[#F8FAFC] mb-1">{selectedArtist.upcomingShows}</div>
+                    <div className="text-xs text-[#64748B] uppercase tracking-widest font-[800]">Live Shows</div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <button className="w-full group bg-gradient-to-r from-fuchsia-600 to-blue-600 hover:from-fuchsia-500 hover:to-blue-500 text-white font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-between shadow-md hover:shadow-lg">
-                    <span className="flex items-center gap-2"><Calendar className="w-5 h-5" /> Tour Dates & Tickets</span>
+                <div className="space-y-4">
+                  <button className="w-full group bg-[#6C5CE7] hover:bg-[#5A4BCF] text-white font-[800] uppercase tracking-wider py-4 px-6 rounded-2xl transition-all flex items-center justify-between shadow-[0_0_20px_rgba(108,92,231,0.4)] hover:shadow-[0_0_30px_rgba(108,92,231,0.6)]">
+                    <span className="flex items-center gap-3"><Calendar className="w-5 h-5" /> Tour Dates & Tickets</span>
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="w-full group bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 hover:border-zinc-300 text-zinc-800 font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-between shadow-sm">
-                    <span className="flex items-center gap-2"><Play className="w-5 h-5" /> Play Artist Radio</span>
+                  <button className="w-full group bg-[#020617] hover:bg-[#1E293B] border border-[#334155] hover:border-[#F43F5E]/50 text-[#F8FAFC] font-[800] uppercase tracking-wider py-4 px-6 rounded-2xl transition-all flex items-center justify-between hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+                    <span className="flex items-center gap-3"><Play className="w-5 h-5 text-[#F43F5E]" /> Play Artist Radio</span>
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>

@@ -5,6 +5,7 @@ import { upload } from "../config/uploads";
 import {
   createEvent,
   deleteEvent,
+  getAdminDashboard,
   getAdminEventDetails,
   getAdminEvents,
   getAllEvents,
@@ -26,6 +27,8 @@ router.post("/event/create-event", protect, adminOnly, upload.single("image"), c
 router.get("/admin/events", protect, adminOnly, getAdminEvents);
 router.get("/admin/events/:id/details", protect, adminOnly, getAdminEventDetails)
 router.get("/event/:id", getSingleEvent);
+router.get("/events", getAllEvents )
+router.get("/admin/dashboard", protect, adminOnly, getAdminDashboard)
 router.put("/events/:id", protect, adminOnly, upload.single("image"), updateEvent);
 router.delete("/event/:id", protect, adminOnly, deleteEvent);
 router.patch("/events/:id/publish", protect, adminOnly, publishEvent);

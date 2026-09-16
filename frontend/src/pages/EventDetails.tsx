@@ -41,10 +41,11 @@ const EventDetails = () => {
           error.response?.data?.message || "Failed to load event details",
           {
             style: {
-              background: "#F04438",
-              color: "#FFFFFF",
-              border: "1px solid rgba(240, 68, 56, 0.2)",
-              borderRadius: "12px"
+              background: "#0F172A",
+              color: "#F8FAFC",
+              border: "1px solid rgba(244, 63, 94, 0.4)",
+              borderRadius: "16px",
+              boxShadow: "0 0 20px rgba(244, 63, 94, 0.2)"
             },
           }
         );
@@ -59,9 +60,9 @@ const EventDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F8F9FC] flex items-center justify-center flex-col gap-4 font-sans">
-        <Loader2 className="w-8 h-8 text-[#6C5CE7] animate-spin" />
-        <p className="text-[#667085] text-sm tracking-widest uppercase font-[700]">
+      <div className="min-h-screen bg-[#020617] flex items-center justify-center flex-col gap-4 font-sans">
+        <Loader2 className="w-10 h-10 text-[#6C5CE7] animate-spin drop-shadow-[0_0_10px_rgba(108,92,231,0.5)]" />
+        <p className="text-[#94A3B8] text-sm tracking-widest uppercase font-[800]">
           Loading Experience...
         </p>
       </div>
@@ -102,17 +103,17 @@ const EventDetails = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#F8F9FC] text-[#172033] font-sans selection:bg-[#6C5CE7]/30 overflow-x-hidden pb-24">
+    <div className="relative min-h-screen bg-[#020617] text-[#F8FAFC] font-sans selection:bg-[#6C5CE7]/40 selection:text-white overflow-x-hidden pb-24">
       
-      {/* Light Ambient Background Glows */}
-      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#6C5CE7]/10 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#00B4D8]/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      {/* Deep Ambient Background Glows */}
+      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#6C5CE7]/15 rounded-full blur-[150px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#00B4D8]/10 rounded-full blur-[150px] pointer-events-none z-0" />
 
-      {/* Floating Back Button (Aligned to match the poster aesthetic) */}
+      {/* Floating Back Button */}
       <div className="fixed top-24 left-6 md:left-10 z-50">
         <button
           onClick={() => navigate(-1)}
-          className="w-12 h-12 bg-[#FFFFFF] border border-gray-200 hover:border-[#6C5CE7] hover:bg-[#F8F9FC] hover:scale-105 rounded-full flex items-center justify-center text-[#172033] transition-all duration-300 shadow-md group"
+          className="w-12 h-12 bg-[#0F172A]/80 backdrop-blur-md border border-[#1E293B] hover:border-[#6C5CE7]/60 hover:bg-[#1E293B] hover:scale-105 rounded-full flex items-center justify-center text-[#F8FAFC] transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group"
         >
           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
         </button>
@@ -121,12 +122,12 @@ const EventDetails = () => {
       {/* Main Content Layout */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-12">
         
-        {/* Banner Image - Corrected vibrant look with bottom fade only */}
+        {/* Cinematic Banner Image */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-[2rem] overflow-hidden relative mb-8 shadow-sm group"
+          className="w-full h-[350px] sm:h-[450px] md:h-[550px] rounded-[2.5rem] overflow-hidden relative mb-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-[#1E293B] group"
         >
           <img
             src={
@@ -134,53 +135,53 @@ const EventDetails = () => {
               "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2000&auto=format&fit=crop"
             }
             alt={event.title}
-            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            className="w-full h-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105 opacity-80 group-hover:opacity-100"
           />
-          {/* Clean bottom-only fade to blend into the background, no full-cover fog */}
-          <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#F8F9FC] via-[#F8F9FC]/80 to-transparent pointer-events-none" />
+          {/* Gradient Overlay to blend with the dark background */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/30 to-transparent" />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Details */}
+          {/* ================= LEFT COLUMN: DETAILS ================= */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="lg:col-span-8 flex flex-col gap-6"
+            className="lg:col-span-8 flex flex-col gap-8"
           >
             {/* Header Card */}
             <motion.div
               variants={itemVariants}
-              className="bg-[#FFFFFF] border border-gray-100 rounded-[2rem] p-6 sm:p-8 md:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]"
+              className="bg-[#0F172A]/80 backdrop-blur-xl border border-[#1E293B] rounded-[2.5rem] p-8 sm:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.3)]"
             >
               <div className="flex flex-wrap gap-3 mb-6">
-                <span className="bg-[#6C5CE7]/10 border border-[#6C5CE7]/20 text-[#6C5CE7] text-xs font-[700] px-4 py-1.5 rounded-full flex items-center gap-1.5">
+                <span className="bg-[#6C5CE7]/10 border border-[#6C5CE7]/30 text-[#6C5CE7] text-xs font-[800] uppercase tracking-widest px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_0_15px_rgba(108,92,231,0.2)]">
                   <Sparkles className="w-3.5 h-3.5" />
                   {event.category || "Premium Access"}
                 </span>
-                <span className="bg-[#00B4D8]/10 border border-[#00B4D8]/20 text-[#00B4D8] text-xs font-[700] px-4 py-1.5 rounded-full flex items-center gap-1.5">
+                <span className="bg-[#00B4D8]/10 border border-[#00B4D8]/30 text-[#00B4D8] text-xs font-[800] uppercase tracking-widest px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,180,216,0.2)]">
                   <Mic2 className="w-3.5 h-3.5" />
                   Live Concert
                 </span>
               </div>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-[800] text-[#172033] tracking-tight leading-[1.1]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-[900] text-[#F8FAFC] tracking-tight leading-[1.1] drop-shadow-md">
                 {event.title}
               </h1>
             </motion.div>
 
-            {/* Meta Grid */}
+            {/* Meta Grid (Dark Neon Cards) */}
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              className="grid grid-cols-2 md:grid-cols-4 gap-5"
             >
-              <div className="bg-[#FFFFFF] border border-gray-100 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-sm hover:border-[#6C5CE7]/30 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-[#F8F9FC] border border-gray-100 flex items-center justify-center text-[#6C5CE7]">
+              <div className="bg-[#1E293B]/40 backdrop-blur-md border border-[#334155] rounded-3xl p-5 flex flex-col gap-3 hover:border-[#6C5CE7]/50 hover:bg-[#1E293B]/80 hover:shadow-[0_0_20px_rgba(108,92,231,0.15)] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#6C5CE7] shadow-inner">
                   <Calendar className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#667085] font-[700] uppercase tracking-wider mb-1">Date</p>
-                  <p className="text-sm font-[700] text-[#172033]">
+                  <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1">Date</p>
+                  <p className="text-sm font-[800] text-[#F8FAFC]">
                     {event.date
                       ? new Date(event.date).toLocaleDateString(undefined, {
                           month: "short",
@@ -192,45 +193,46 @@ const EventDetails = () => {
                 </div>
               </div>
 
-              <div className="bg-[#FFFFFF] border border-gray-100 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-sm hover:border-[#00B4D8]/30 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-[#F8F9FC] border border-gray-100 flex items-center justify-center text-[#00B4D8]">
+              <div className="bg-[#1E293B]/40 backdrop-blur-md border border-[#334155] rounded-3xl p-5 flex flex-col gap-3 hover:border-[#00B4D8]/50 hover:bg-[#1E293B]/80 hover:shadow-[0_0_20px_rgba(0,180,216,0.15)] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#00B4D8] shadow-inner">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#667085] font-[700] uppercase tracking-wider mb-1">Time</p>
-                  <p className="text-sm font-[700] text-[#172033]">{event.time || "TBA"}</p>
+                  <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1">Time</p>
+                  <p className="text-sm font-[800] text-[#F8FAFC]">{event.time || "TBA"}</p>
                 </div>
               </div>
 
-              <div className="bg-[#FFFFFF] border border-gray-100 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-sm hover:border-[#6C5CE7]/30 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-[#F8F9FC] border border-gray-100 flex items-center justify-center text-[#6C5CE7]">
+              <div className="bg-[#1E293B]/40 backdrop-blur-md border border-[#334155] rounded-3xl p-5 flex flex-col gap-3 hover:border-[#6C5CE7]/50 hover:bg-[#1E293B]/80 hover:shadow-[0_0_20px_rgba(108,92,231,0.15)] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#6C5CE7] shadow-inner">
                   <Timer className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#667085] font-[700] uppercase tracking-wider mb-1">Duration</p>
-                  <p className="text-sm font-[700] text-[#172033]">
+                  <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1">Duration</p>
+                  <p className="text-sm font-[800] text-[#F8FAFC]">
                     {event.duration ? `${event.duration} Mins` : "TBA"}
                   </p>
                 </div>
               </div>
 
-              <div className="bg-[#FFFFFF] border border-gray-100 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-sm hover:border-[#00B4D8]/30 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-[#F8F9FC] border border-gray-100 flex items-center justify-center text-[#00B4D8]">
+              <div className="bg-[#1E293B]/40 backdrop-blur-md border border-[#334155] rounded-3xl p-5 flex flex-col gap-3 hover:border-[#00B4D8]/50 hover:bg-[#1E293B]/80 hover:shadow-[0_0_20px_rgba(0,180,216,0.15)] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#00B4D8] shadow-inner">
                   <Globe className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#667085] font-[700] uppercase tracking-wider mb-1">Language</p>
-                  <p className="text-sm font-[700] text-[#172033]">{event.language || "TBA"}</p>
+                  <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1">Language</p>
+                  <p className="text-sm font-[800] text-[#F8FAFC]">{event.language || "TBA"}</p>
                 </div>
               </div>
 
-              <div className="col-span-2 md:col-span-4 bg-[#FFFFFF] border border-gray-100 rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-sm hover:border-[#6C5CE7]/30 transition-colors">
-                <div className="w-12 h-12 rounded-xl bg-[#F8F9FC] border border-gray-100 flex items-center justify-center text-[#667085] shrink-0">
+              {/* Full Width Venue Card */}
+              <div className="col-span-2 md:col-span-4 bg-[#1E293B]/40 backdrop-blur-md border border-[#334155] rounded-3xl p-5 flex items-center gap-4 hover:border-[#F43F5E]/50 hover:bg-[#1E293B]/80 hover:shadow-[0_0_20px_rgba(244,63,94,0.15)] transition-all">
+                <div className="w-12 h-12 rounded-xl bg-[#020617] border border-[#1E293B] flex items-center justify-center text-[#F43F5E] shrink-0 shadow-inner">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#667085] font-[700] uppercase tracking-wider mb-1">Venue & Location</p>
-                  <p className="text-base font-[700] text-[#172033]">
+                  <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1">Venue & Location</p>
+                  <p className="text-base font-[800] text-[#F8FAFC]">
                     {event.venue}, {event.location}
                   </p>
                 </div>
@@ -240,28 +242,28 @@ const EventDetails = () => {
             {/* Description & Policy */}
             <motion.div
               variants={itemVariants}
-              className="bg-[#FFFFFF] border border-gray-100 rounded-[2rem] p-6 sm:p-8 md:p-10 flex flex-col gap-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]"
+              className="bg-[#0F172A]/80 backdrop-blur-xl border border-[#1E293B] rounded-[2.5rem] p-8 sm:p-10 flex flex-col gap-10 shadow-[0_10px_40px_rgba(0,0,0,0.3)]"
             >
               <div>
-                <h3 className="text-xl font-[800] text-[#172033] mb-4 flex items-center gap-2">
+                <h3 className="text-2xl font-[900] text-[#F8FAFC] mb-5 flex items-center gap-3">
                   <Info className="w-6 h-6 text-[#00B4D8]" /> About Event
                 </h3>
-                <p className="text-[#667085] text-sm md:text-base leading-relaxed whitespace-pre-wrap font-[500]">
+                <p className="text-[#94A3B8] text-sm md:text-base leading-relaxed whitespace-pre-wrap font-[500]">
                   {event.description}
                 </p>
               </div>
 
-              <div className="pt-8 border-t border-gray-100">
-                <h4 className="text-lg font-[800] text-[#172033] mb-4 flex items-center gap-2">
+              <div className="pt-8 border-t border-[#1E293B]">
+                <h4 className="text-xl font-[900] text-[#F8FAFC] mb-5 flex items-center gap-3">
                   <ShieldCheck className="w-6 h-6 text-[#6C5CE7]" /> Access Policy
                 </h4>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-[#667085] font-[500] text-sm">
-                    <UserCheck className="w-5 h-5 text-[#667085] mt-0.5 shrink-0" />
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-4 text-[#94A3B8] font-[500] text-sm">
+                    <UserCheck className="w-5 h-5 text-[#F43F5E] mt-0.5 shrink-0" />
                     Minimum age limit for this event is {event.minimumAge}+ years.
                   </li>
-                  <li className="flex items-start gap-3 text-[#667085] font-[500] text-sm">
-                    <span className="w-2 h-2 rounded-full bg-[#6C5CE7] mt-1.5 ml-1.5 shrink-0" />
+                  <li className="flex items-start gap-4 text-[#94A3B8] font-[500] text-sm">
+                    <span className="w-2 h-2 rounded-full bg-[#6C5CE7] mt-2 ml-1.5 shrink-0 shadow-[0_0_8px_rgba(108,92,231,0.8)]" />
                     Tickets are strictly non-refundable and non-transferable under standard protocol.
                   </li>
                 </ul>
@@ -269,57 +271,59 @@ const EventDetails = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Column: Admission CTA & Extra Widgets */}
+          {/* ================= RIGHT COLUMN: ADMISSION CTA ================= */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="lg:col-span-4 sticky top-24 flex flex-col gap-6"
+            className="lg:col-span-4 sticky top-28 flex flex-col gap-6"
           >
-            {/* Ticket Booking Card */}
-            <div className="bg-[#FFFFFF] border border-gray-100 rounded-[2rem] p-6 sm:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)]">
+            {/* Ticket Booking Glass Card */}
+            <div className="bg-[#0F172A]/90 backdrop-blur-2xl border border-[#1E293B] rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
               <div className="mb-8">
-                <p className="text-xs text-[#00B4D8] font-[700] uppercase tracking-widest mb-2">
+                <p className="text-[10px] text-[#00B4D8] font-[800] uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-[#00B4D8] rounded-full animate-pulse" />
                   {getPriceLabel()}
                 </p>
-                <h2 className="text-5xl font-[800] text-[#172033] tracking-tighter mb-2">
+                <h2 className="text-5xl lg:text-6xl font-[900] text-[#F8FAFC] tracking-tighter mb-2 drop-shadow-md">
                   {getDisplayPrice()}
                 </h2>
-                <p className="text-sm font-[600] text-[#667085]">
+                <p className="text-sm font-[600] text-[#64748B]">
                   {event.availableTickets} Tickets Available
                 </p>
               </div>
 
+              {/* Glowing CTA Button */}
               <button
                 onClick={() => navigate(`/event/${event.id}/book`)}
-                className="w-full bg-[#6C5CE7] hover:bg-[#4834D4] text-[#FFFFFF] font-[700] text-base py-4 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 mb-4 shadow-[0_8px_20px_rgba(108,92,231,0.25)] uppercase tracking-wider"
+                className="w-full bg-gradient-to-r from-[#6C5CE7] to-[#8B78FF] hover:from-[#5A4BCF] hover:to-[#6C5CE7] text-white font-[800] text-base py-4 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 mb-5 shadow-[0_0_20px_rgba(108,92,231,0.4)] hover:shadow-[0_0_30px_rgba(108,92,231,0.6)] uppercase tracking-wider"
               >
                 <Ticket className="w-5 h-5" />
                 Claim Pass
               </button>
 
-              <div className="flex gap-3 mt-4">
-                <button className="flex-1 bg-[#FFFFFF] hover:bg-[#F8F9FC] border border-gray-200 text-[#172033] py-3 rounded-xl flex justify-center items-center gap-2 text-sm font-[700] transition-colors">
-                  <Heart className="w-4 h-4 text-[#667085]" /> Save
+              <div className="flex gap-4 mt-2">
+                <button className="flex-1 bg-[#1E293B]/50 hover:bg-[#1E293B] border border-[#334155] hover:border-[#6C5CE7]/50 text-[#F8FAFC] py-3.5 rounded-xl flex justify-center items-center gap-2 text-xs font-[800] uppercase tracking-wider transition-all">
+                  <Heart className="w-4 h-4 text-[#F43F5E]" /> Save
                 </button>
-                <button className="flex-1 bg-[#FFFFFF] hover:bg-[#F8F9FC] border border-gray-200 text-[#172033] py-3 rounded-xl flex justify-center items-center gap-2 text-sm font-[700] transition-colors">
-                  <Share2 className="w-4 h-4 text-[#667085]" /> Share
+                <button className="flex-1 bg-[#1E293B]/50 hover:bg-[#1E293B] border border-[#334155] hover:border-[#00B4D8]/50 text-[#F8FAFC] py-3.5 rounded-xl flex justify-center items-center gap-2 text-xs font-[800] uppercase tracking-wider transition-all">
+                  <Share2 className="w-4 h-4 text-[#00B4D8]" /> Share
                 </button>
               </div>
             </div>
 
             {/* Organizer Widget */}
-            <div className="bg-[#FFFFFF] border border-gray-100 rounded-[2rem] p-6 shadow-sm">
-              <h4 className="font-[800] text-[#172033] mb-4 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-[#00B4D8]" /> Event Organized By
+            <div className="bg-[#0F172A]/80 backdrop-blur-xl border border-[#1E293B] rounded-[2rem] p-6 shadow-md">
+              <h4 className="font-[800] text-[#64748B] text-xs uppercase tracking-widest mb-5 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-[#00B4D8]" /> Event Organized By
               </h4>
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-[#F8F9FC] border border-gray-100 rounded-full flex items-center justify-center text-[#6C5CE7] font-[800] text-xl shrink-0">
+                <div className="w-14 h-14 bg-[#020617] border border-[#1E293B] rounded-full flex items-center justify-center text-[#6C5CE7] font-[900] text-xl shrink-0 shadow-inner">
                   {event.organizer ? event.organizer.charAt(0).toUpperCase() : "O"}
                 </div>
                 <div>
-                  <p className="font-[700] text-[#172033] text-base">{event.organizer || "Official Organizer"}</p>
-                  <p className="text-xs font-[600] text-[#00B4D8] flex items-center gap-1 mt-1">
+                  <p className="font-[800] text-[#F8FAFC] text-base tracking-wide">{event.organizer || "Official Organizer"}</p>
+                  <p className="text-[10px] font-[800] text-[#10B981] flex items-center gap-1.5 mt-1.5 uppercase tracking-widest">
                     <ShieldCheck className="w-3.5 h-3.5" /> Verified Partner
                   </p>
                 </div>

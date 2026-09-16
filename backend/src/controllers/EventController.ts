@@ -574,10 +574,7 @@ export const getAdminEventDetails = async (
     );
 
     // Available tickets
-    const availableTickets = Math.max(
-      event.totalTickets - soldTickets,
-      0,
-    );
+    const availableTickets = Math.max(event.totalTickets - soldTickets, 0);
 
     // Revenue from successful bookings
     const revenue = confirmedBookings.reduce(
@@ -587,14 +584,9 @@ export const getAdminEventDetails = async (
 
     // Category statistics
     const categoryStatistics = event.seatCategories.map((category) => {
-      const soldSeats = category.seats.filter(
-        (seat) => seat.isBooked,
-      ).length;
+      const soldSeats = category.seats.filter((seat) => seat.isBooked).length;
 
-      const availableSeats = Math.max(
-        category.totalSeats - soldSeats,
-        0,
-      );
+      const availableSeats = Math.max(category.totalSeats - soldSeats, 0);
 
       return {
         id: category.id,
@@ -666,6 +658,298 @@ export const getAdminEventDetails = async (
     res.status(500).json({
       success: false,
       message: error.message || "Failed to fetch event details",
+    });
+  }
+};
+
+export const getAdminDashboard = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    // Get all events managed by admin
+    const events = await prisma.event.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        image: true,
+        totalTickets: true,
+        availableTickets: true,
+        date: true,
+        status: true,
+        isPublished: true,
+        createdAt: true,
+      },
+    });
+
+    // Get all bookings
+    const bookings = await prisma.booking.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        ticketNumber: true,
+        totalAmount: true,
+        bookingStatus: true,
+        paymentStatus: true,
+        checkedIn: true,
+        createdAt: true,
+
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+
+        event: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+
+        seats: {
+          select: {
+            seatId: true,
+          },
+        },
+      },
+    });
+
+    // Only successful confirmed bookings
+    const confirmedBookings = bookings.filter(
+      (booking) =>
+        booking.paymentStatus === "SUCCESS" &&
+        booking.bookingStatus === "CONFIRMED",
+    );
+
+    // -----------------------------------
+    // TOTAL EVENTS
+    // -----------------------------------
+
+    const totalEvents = events.length;
+
+    // -----------------------------------
+    // TOTAL TICKETS
+    // -----------------------------------
+
+    const totalTickets = events.reduce(
+      (total, event) => total + event.totalTickets,
+      0,
+    );
+
+    // -----------------------------------
+    // TICKETS SOLD
+    // -----------------------------------
+
+    const ticketsSold = confirmedBookings.reduce(
+      (total, booking) => total + booking.seats.length,
+      0,
+    );
+
+    // -----------------------------------
+    // AVAILABLE TICKETS
+    // -----------------------------------
+
+    const availableTickets = Math.max(totalTickets - ticketsSold, 0);
+
+    // -----------------------------------
+    // TOTAL BOOKINGS
+    // -----------------------------------
+
+    const totalBookings = confirmedBookings.length;
+
+    // -----------------------------------
+    // TOTAL REVENUE
+    // -----------------------------------
+
+    const totalRevenue = confirmedBookings.reduce(
+      (total, booking) => total + booking.totalAmount,
+      0,
+    );
+
+    // -----------------------------------
+    // CHECKED IN
+    // -----------------------------------
+
+    const totalCheckedIn = confirmedBookings.filter(
+      (booking) => booking.checkedIn,
+    ).length;
+
+    // -----------------------------------
+    // EVENT PERFORMANCE
+    // -----------------------------------
+
+    const eventPerformance = events.map((event) => {
+      const eventBookings = confirmedBookings.filter(
+        (booking) => booking.event.id === event.id,
+      );
+
+      const sold = eventBookings.reduce(
+        (total, booking) => total + booking.seats.length,
+        0,
+      );
+
+      const revenue = eventBookings.reduce(
+        (total, booking) => total + booking.totalAmount,
+        0,
+      );
+
+      const available = Math.max(event.totalTickets - sold, 0);
+
+      const percentage =
+        event.totalTickets > 0
+          ? Math.round((sold / event.totalTickets) * 100)
+          : 0;
+
+      return {
+        id: event.id,
+        title: event.title,
+        image: event.image,
+
+        totalTickets: event.totalTickets,
+        soldTickets: sold,
+        availableTickets: available,
+
+        bookingCount: eventBookings.length,
+
+        revenue,
+
+        soldPercentage: percentage,
+
+        status:
+          available === 0
+            ? "SOLD_OUT"
+            : percentage >= 80
+              ? "SELLING_FAST"
+              : "AVAILABLE",
+
+        date: event.date,
+        eventStatus: event.status,
+        isPublished: event.isPublished,
+      };
+    });
+
+    // -----------------------------------
+    // ALMOST SOLD OUT
+    // -----------------------------------
+
+    const almostSoldOut = eventPerformance
+      .filter(
+        (event) => event.soldPercentage >= 80 && event.soldPercentage < 100,
+      )
+      .sort((a, b) => b.soldPercentage - a.soldPercentage);
+
+    // -----------------------------------
+    // RECENT BOOKINGS
+    // -----------------------------------
+
+    const recentBookings = bookings.slice(0, 10).map((booking) => ({
+      id: booking.id,
+      ticketNumber: booking.ticketNumber,
+
+      customer: {
+        name: booking.user.name,
+        email: booking.user.email,
+      },
+
+      event: {
+        id: booking.event.id,
+        title: booking.event.title,
+      },
+
+      amount: booking.totalAmount,
+
+      paymentStatus: booking.paymentStatus,
+      bookingStatus: booking.bookingStatus,
+
+      checkedIn: booking.checkedIn,
+
+      date: booking.createdAt,
+    }));
+
+    // -----------------------------------
+    // REVENUE BY MONTH
+    // -----------------------------------
+
+    const revenueByMonth = Array.from({ length: 12 }, (_, index) => ({
+      month: index + 1,
+      revenue: 0,
+    }));
+
+    confirmedBookings.forEach((booking) => {
+      const month = new Date(booking.createdAt).getMonth();
+
+      revenueByMonth[month].revenue += booking.totalAmount;
+    });
+
+    // -----------------------------------
+    // BOOKINGS BY DAY
+    // -----------------------------------
+
+    const bookingsByDay = [
+      { day: "Sun", bookings: 0 },
+      { day: "Mon", bookings: 0 },
+      { day: "Tue", bookings: 0 },
+      { day: "Wed", bookings: 0 },
+      { day: "Thu", bookings: 0 },
+      { day: "Fri", bookings: 0 },
+      { day: "Sat", bookings: 0 },
+    ];
+
+    confirmedBookings.forEach((booking) => {
+      const day = new Date(booking.createdAt).getDay();
+
+      bookingsByDay[day].bookings++;
+    });
+
+    // -----------------------------------
+    // FINAL RESPONSE
+    // -----------------------------------
+
+    res.status(200).json({
+      success: true,
+
+      data: {
+        summary: {
+          totalEvents,
+
+          totalTickets,
+
+          ticketsSold,
+
+          availableTickets,
+
+          totalBookings,
+
+          totalRevenue,
+
+          totalCheckedIn,
+        },
+
+        eventPerformance,
+
+        recentBookings,
+
+        almostSoldOut,
+
+        revenueByMonth,
+
+        bookingsByDay,
+      },
+    });
+  } catch (error: any) {
+    console.error("Get Admin Dashboard Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to load admin dashboard",
     });
   }
 };

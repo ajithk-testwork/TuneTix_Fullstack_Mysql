@@ -30,6 +30,7 @@ import ResetPassword from "./pages/Auth/ResetPassword";
 import AdminLogin from "./admin/pages/Auth/AdminLogin";
 import AdminForgotPassword from "./admin/pages/Auth/AdminForgotPassword";
 import AdminResetPassword from "./admin/pages/Auth/AdminResetPassword";
+import QRScanner from "./admin/pages/QRScanner";
 
 const UserLayout = ({ user }: { user: any }) => {
   return (
@@ -104,7 +105,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
         <Route path="/admin/reset-password" element={<AdminResetPassword />} />
-
+         <Route path="/admin/scan-ticket" element={<QRScanner />} />
 
 
 
@@ -124,6 +125,7 @@ function App() {
           <Route path="manage-events" element={<ManageEvents />} />
           <Route path="events/:id" element={<AdminEventDetails />} />
           <Route path="published-events" element={<PublishedEvents />} />
+         
         </Route>
       </Routes>
     </div>

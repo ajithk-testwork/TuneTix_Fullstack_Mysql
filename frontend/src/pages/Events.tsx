@@ -77,7 +77,6 @@ const Events = () => {
     fetchEvents();
   }, []);
 
-  // Safely extract unique categories using optional chaining so it never crashes
   const uniqueCategories = [
     "All", 
     ...Array.from(new Set(events.map(e => e?.category).filter(Boolean)))
@@ -102,36 +101,38 @@ const Events = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans pt-32 pb-32">
+    // Base Dark Slate Background
+    <div className="min-h-screen bg-[#020617] font-sans pt-24 pb-32">
       
       {/* ================= TOP HERO SECTION ================= */}
-      <div className="bg-[#172033] text-white py-16 px-4 sm:px-6 lg:px-12 mb-12 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#6C5CE7]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#00B4D8]/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-gradient-to-b from-[#0F172A] to-[#020617] border-b border-[#1E293B] py-16 px-4 sm:px-6 lg:px-12 mb-12 relative overflow-hidden">
+        {/* Ambient Neon Glows */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#6C5CE7]/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#00B4D8]/10 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="max-w-[1400px] mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[#00B4D8] text-xs font-[700] uppercase tracking-widest mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#6C5CE7]/10 border border-[#6C5CE7]/30 text-[#6C5CE7] text-xs font-[800] uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(108,92,231,0.2)]">
               <Music className="w-3.5 h-3.5" /> Concert Directory
             </div>
-            <h1 className="text-4xl sm:text-5xl font-[800] tracking-tight mb-3">
-              Explore Live Events {cityQuery && <span className="text-[#00B4D8]">in {cityQuery}</span>}
+            <h1 className="text-4xl sm:text-5xl font-[900] text-[#F8FAFC] tracking-tight mb-4 drop-shadow-md">
+              Explore Live Events {cityQuery && <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6C5CE7] to-[#00B4D8] drop-shadow-[0_0_10px_rgba(108,92,231,0.3)]">in {cityQuery}</span>}
             </h1>
-            <p className="text-gray-300 font-[500] text-base max-w-xl">
+            <p className="text-[#94A3B8] font-[500] text-base max-w-xl leading-relaxed">
               Browse upcoming arena shows, stadium concerts, and music festivals. Secure your passes early.
             </p>
           </div>
 
-          {/* Search Box */}
-          <div className="w-full md:w-96 bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-inner">
+          {/* Dark Glass Search Box */}
+          <div className="w-full md:w-[400px] bg-[#0F172A]/80 backdrop-blur-xl border border-[#1E293B] rounded-2xl p-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] focus-within:border-[#6C5CE7]/50 focus-within:ring-2 focus-within:ring-[#6C5CE7]/20 transition-all">
             <div className="flex items-center gap-3 px-4 py-3 w-full">
-              <Search className="w-5 h-5 text-gray-400 shrink-0" />
+              <Search className="w-5 h-5 text-[#64748B] shrink-0" />
               <input 
                 type="text" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search events or venues..." 
-                className="w-full bg-transparent text-white placeholder-gray-400 font-[500] text-sm outline-none"
+                className="w-full bg-transparent text-[#F8FAFC] placeholder-[#64748B] font-[500] text-sm outline-none"
               />
             </div>
           </div>
@@ -141,17 +142,17 @@ const Events = () => {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12">
         
         {/* ================= CATEGORY FILTER PILLS ================= */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-          <div className="flex items-center gap-2 bg-[#FFFFFF] border border-gray-200 p-1.5 rounded-2xl shadow-sm overflow-x-auto hide-scrollbar max-w-full">
-            <Filter className="w-4 h-4 text-[#667085] ml-3 shrink-0 hidden sm:block" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
+          <div className="flex items-center gap-2 bg-[#0F172A] border border-[#1E293B] p-1.5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-x-auto hide-scrollbar max-w-full">
+            <Filter className="w-4 h-4 text-[#64748B] ml-3 shrink-0 hidden sm:block" />
             {uniqueCategories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-2.5 rounded-xl text-xs font-[700] transition-all shrink-0 ${
+                className={`px-6 py-2.5 rounded-xl text-xs font-[800] tracking-wider transition-all shrink-0 ${
                   selectedCategory === cat 
-                    ? 'bg-[#6C5CE7] text-white shadow-[0_4px_12px_rgba(108,92,231,0.25)]' 
-                    : 'text-[#667085] hover:text-[#172033]'
+                    ? 'bg-[#6C5CE7] text-[#FFFFFF] shadow-[0_0_15px_rgba(108,92,231,0.4)]' 
+                    : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50'
                 }`}
               >
                 {cat}
@@ -159,16 +160,16 @@ const Events = () => {
             ))}
           </div>
 
-          <p className="text-sm font-[600] text-[#667085] px-2 shrink-0">
-            Showing <span className="text-[#172033] font-[800]">{filteredEvents.length}</span> events
+          <p className="text-sm font-[600] text-[#94A3B8] px-2 shrink-0 bg-[#0F172A] border border-[#1E293B] py-2 px-4 rounded-xl">
+            Showing <span className="text-[#F8FAFC] font-[800]">{filteredEvents.length}</span> events
           </p>
         </div>
 
         {/* ================= EVENT CARDS GRID ================= */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
-            <Loader2 className="w-10 h-10 text-[#6C5CE7] animate-spin" />
-            <p className="text-[#667085] font-[600] text-sm">Syncing live event schedules...</p>
+          <div className="flex flex-col items-center justify-center py-32 space-y-4 bg-[#0F172A] border border-[#1E293B] rounded-[2.5rem] shadow-lg">
+            <Loader2 className="w-10 h-10 text-[#6C5CE7] animate-spin drop-shadow-[0_0_10px_rgba(108,92,231,0.5)]" />
+            <p className="text-[#94A3B8] font-[600] text-sm">Syncing live event schedules...</p>
           </div>
         ) : filteredEvents.length > 0 ? (
           <motion.div 
@@ -182,10 +183,12 @@ const Events = () => {
             ))}
           </motion.div>
         ) : (
-          <div className="text-center py-24 bg-[#FFFFFF] border border-gray-200 rounded-[2.5rem] shadow-sm">
-            <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-[800] text-[#172033]">No events found</h3>
-            <p className="text-sm text-[#667085] mt-1">Try adjusting your search keywords or category filters.</p>
+          <div className="text-center py-24 bg-[#0F172A] border border-[#1E293B] rounded-[2.5rem] shadow-lg">
+            <div className="w-16 h-16 bg-[#1E293B] rounded-full flex items-center justify-center mx-auto mb-5">
+              <CalendarDays className="w-8 h-8 text-[#334155]" />
+            </div>
+            <h3 className="text-2xl font-[900] text-[#F8FAFC] tracking-tight mb-2">No events found</h3>
+            <p className="text-sm text-[#94A3B8] font-[500]">Try adjusting your search keywords or category filters.</p>
           </div>
         )}
 

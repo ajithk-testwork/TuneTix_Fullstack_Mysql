@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/userAPI";
+import { Ticket, ArrowLeft, Loader2, CalendarX2 } from "lucide-react";
 
-// Reusing interfaces from your booking structure
 interface EventDetail {
   id: string;
   title: string;
@@ -39,7 +39,6 @@ const Dashboard = () => {
           return;
         }
 
-        // Adjust this endpoint to match your backend route for fetching a user's bookings
         const response = await API.get("/booking/my", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,8 +61,6 @@ const Dashboard = () => {
     fetchMyTickets();
   }, []);
 
-  // Filter bookings based on the active tab
-  // Assuming upcoming means the event date is in the future
   const currentDate = new Date();
   const displayedBookings = bookings.filter((booking) => {
     const eventDate = new Date(booking.event.date);
@@ -73,50 +70,56 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans pt-20 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    // Base Dark Slate Background
+    <div className="min-h-screen bg-[#020617] font-sans pt-28 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      
+      {/* Ambient Neon Glows */}
+      <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-[#6C5CE7]/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#00B4D8]/5 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
         
-        {/* Navigation / Header Section */}
-        <div className="mb-8">
+        {/* ================= HEADER SECTION ================= */}
+        <div className="mb-10">
           {/* Back to Home Button */}
           <Link 
             to="/" 
-            className="inline-flex items-center text-sm font-[700] text-[#667085] hover:text-[#6C5CE7] transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-sm font-[800] uppercase tracking-wider text-[#94A3B8] hover:text-[#6C5CE7] transition-colors mb-8 group"
           >
-            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path>
-            </svg>
+            <div className="w-8 h-8 rounded-full bg-[#0F172A] border border-[#1E293B] flex items-center justify-center group-hover:border-[#6C5CE7]/50 transition-colors">
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            </div>
             Back to Home
           </Link>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-[800] text-[#172033] tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-[900] text-[#F8FAFC] tracking-tight drop-shadow-md">
                 My Tickets
               </h1>
-              <p className="text-[#667085] font-[500] mt-2 text-sm md:text-base">
+              <p className="text-[#94A3B8] font-[500] mt-3 text-base">
                 Manage your event bookings and access your digital passes.
               </p>
             </div>
 
-            {/* Tabs */}
-            <div className="flex bg-[#FFFFFF] border border-gray-200 p-1 rounded-xl w-full md:w-auto shadow-sm">
+            {/* Dark Glass Tabs */}
+            <div className="flex bg-[#0F172A] border border-[#1E293B] p-1.5 rounded-2xl w-full md:w-auto shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
               <button
                 onClick={() => setActiveTab("upcoming")}
-                className={`flex-1 md:flex-none px-6 py-2.5 text-sm font-[700] rounded-lg transition-all ${
+                className={`flex-1 md:flex-none px-8 py-3 text-xs font-[800] uppercase tracking-wider rounded-xl transition-all ${
                   activeTab === "upcoming"
-                    ? "bg-[#F8F9FC] text-[#6C5CE7] shadow-sm border border-gray-100"
-                    : "text-[#667085] hover:text-[#172033]"
+                    ? "bg-[#6C5CE7] text-[#FFFFFF] shadow-[0_0_15px_rgba(108,92,231,0.4)]"
+                    : "text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50"
                 }`}
               >
                 Upcoming
               </button>
               <button
                 onClick={() => setActiveTab("past")}
-                className={`flex-1 md:flex-none px-6 py-2.5 text-sm font-[700] rounded-lg transition-all ${
+                className={`flex-1 md:flex-none px-8 py-3 text-xs font-[800] uppercase tracking-wider rounded-xl transition-all ${
                   activeTab === "past"
-                    ? "bg-[#F8F9FC] text-[#6C5CE7] shadow-sm border border-gray-100"
-                    : "text-[#667085] hover:text-[#172033]"
+                    ? "bg-[#6C5CE7] text-[#FFFFFF] shadow-[0_0_15px_rgba(108,92,231,0.4)]"
+                    : "text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50"
                 }`}
               >
                 Past Events
@@ -125,88 +128,84 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Loading State */}
+        {/* ================= LOADING STATE ================= */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4">
-            <div className="w-12 h-12 border-4 border-[#6C5CE7]/20 border-t-[#6C5CE7] rounded-full animate-spin"></div>
-            <p className="text-[#667085] font-[500]">Loading your tickets...</p>
+          <div className="flex flex-col items-center justify-center py-32 space-y-4 bg-[#0F172A] border border-[#1E293B] rounded-[2.5rem] shadow-lg">
+            <Loader2 className="w-10 h-10 text-[#6C5CE7] animate-spin drop-shadow-[0_0_10px_rgba(108,92,231,0.5)]" />
+            <p className="text-[#94A3B8] font-[700] uppercase tracking-widest text-sm">Loading your tickets...</p>
           </div>
         )}
 
-        {/* Error State */}
+        {/* ================= ERROR STATE ================= */}
         {error && !loading && (
-          <div className="bg-[#F04438]/10 border border-[#F04438]/20 text-[#F04438] p-6 rounded-xl text-center shadow-sm">
-            <p className="font-[700]">{error}</p>
+          <div className="bg-[#F43F5E]/10 border border-[#F43F5E]/20 text-[#F43F5E] p-6 rounded-2xl text-center shadow-[0_0_15px_rgba(244,63,94,0.1)]">
+            <p className="font-[800] tracking-wide">{error}</p>
           </div>
         )}
 
-        {/* Tickets Grid */}
+        {/* ================= TICKETS GRID ================= */}
         {!loading && !error && displayedBookings.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayedBookings.map((booking) => (
               <div
                 key={booking.id}
-                className="bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(108,92,231,0.15)] hover:border-[#6C5CE7]/30 transition-all duration-300 border border-gray-100 flex flex-col"
+                className="bg-[#0F172A] rounded-[2rem] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(108,92,231,0.25)] border border-[#1E293B] hover:border-[#6C5CE7]/50 transition-all duration-500 flex flex-col group relative"
               >
                 {/* Event Image */}
-                <div className="relative h-48 w-full bg-[#F8F9FC] overflow-hidden group">
+                <div className="relative h-56 w-full bg-[#020617] overflow-hidden">
                   {booking.event.image ? (
                     <img
                       src={booking.event.image}
                       alt={booking.event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-tr from-[#6C5CE7] to-[#00B4D8]"></div>
+                    <div className="w-full h-full bg-gradient-to-tr from-[#6C5CE7] to-[#00B4D8] opacity-80"></div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  {/* Dark gradient to blend with the card body */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent"></div>
 
                   {/* Date Badge */}
-                  <div className="absolute top-4 left-4 bg-[#FFFFFF]/95 backdrop-blur-sm rounded-lg text-center px-3 py-1 shadow-sm">
-                    <span className="block text-xs font-[700] text-[#667085] uppercase">
-                      {new Date(booking.event.date).toLocaleDateString(
-                        undefined,
-                        { month: "short" },
-                      )}
+                  <div className="absolute top-5 left-5 bg-[#020617]/80 backdrop-blur-md border border-[#334155] rounded-xl text-center px-4 py-2 shadow-lg">
+                    <span className="block text-[10px] font-[800] text-[#94A3B8] uppercase tracking-widest mb-0.5">
+                      {new Date(booking.event.date).toLocaleDateString(undefined, { month: "short" })}
                     </span>
-                    <span className="block text-lg font-[800] text-[#6C5CE7] leading-tight">
-                      {new Date(booking.event.date).toLocaleDateString(
-                        undefined,
-                        { day: "2-digit" },
-                      )}
+                    <span className="block text-2xl font-[900] text-[#F8FAFC] leading-none drop-shadow-[0_0_8px_rgba(248,250,252,0.5)]">
+                      {new Date(booking.event.date).toLocaleDateString(undefined, { day: "2-digit" })}
                     </span>
                   </div>
                 </div>
 
                 {/* Ticket Details */}
-                <div className="p-5 flex-1 flex flex-col">
-                  <div className="mb-4 flex-1">
-                    <h3 className="text-lg font-[800] text-[#172033] leading-tight mb-1 line-clamp-2">
+                <div className="p-6 flex-1 flex flex-col relative z-10">
+                  <div className="mb-6 flex-1">
+                    <h3 className="text-2xl font-[900] text-[#F8FAFC] leading-tight mb-2 line-clamp-2 group-hover:text-[#6C5CE7] transition-colors drop-shadow-sm">
                       {booking.event.title}
                     </h3>
-                    <p className="text-sm text-[#667085] font-[500]">
+                    <p className="text-sm text-[#94A3B8] font-[500] flex items-center gap-1.5">
                       {booking.event.venue}, {booking.event.location}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-4 mb-4">
+                  {/* Info Row */}
+                  <div className="flex items-center justify-between border-t border-[#1E293B] pt-5 mb-6">
                     <div>
-                      <p className="text-[10px] text-[#667085] font-[700] uppercase tracking-wider">
+                      <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1.5">
                         Ticket ID
                       </p>
-                      <p className="text-sm font-mono font-[700] text-[#172033]">
+                      <p className="text-sm font-mono font-[800] text-[#F8FAFC] bg-[#1E293B]/50 px-2.5 py-1 rounded border border-[#334155] shadow-inner">
                         {booking.ticketNumber}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-[#667085] font-[700] uppercase tracking-wider">
+                      <p className="text-[10px] text-[#64748B] font-[800] uppercase tracking-widest mb-1.5">
                         Status
                       </p>
                       <span
-                        className={`text-xs font-[700] px-2 py-0.5 rounded uppercase tracking-wide ${
+                        className={`text-[10px] font-[900] px-3 py-1.5 rounded-md uppercase tracking-wider shadow-sm border ${
                           booking.bookingStatus === "CONFIRMED"
-                            ? "bg-[#12B76A]/10 text-[#12B76A]"
-                            : "bg-[#00B4D8]/10 text-[#00B4D8]"
+                            ? "bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30"
+                            : "bg-[#00B4D8]/10 text-[#00B4D8] border-[#00B4D8]/30"
                         }`}
                       >
                         {booking.bookingStatus}
@@ -217,8 +216,8 @@ const Dashboard = () => {
                   {/* Actions */}
                   <div className="flex gap-3">
                     <Link
-                      to={`/ticket/${booking.id}`} // Links to a detailed single ticket view
-                      className="flex-1 text-center py-2.5 px-4 bg-[#6C5CE7] hover:bg-[#4834D4] text-[#FFFFFF] shadow-[0_4px_14px_rgba(108,92,231,0.25)] text-sm font-[700] rounded-lg transition-colors"
+                      to={`/ticket/${booking.id}`} 
+                      className="flex-1 text-center py-3.5 px-4 bg-[#6C5CE7] hover:bg-[#5A4BCF] text-[#FFFFFF] shadow-[0_0_15px_rgba(108,92,231,0.4)] hover:shadow-[0_0_25px_rgba(108,92,231,0.6)] text-sm font-[800] uppercase tracking-wider rounded-xl transition-all"
                     >
                       View Ticket
                     </Link>
@@ -229,34 +228,21 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Empty State */}
+        {/* ================= EMPTY STATE ================= */}
         {!loading && !error && displayedBookings.length === 0 && (
-          <div className="bg-[#FFFFFF] rounded-3xl p-12 text-center shadow-sm border border-gray-100 mt-4">
-            <div className="w-24 h-24 bg-[#F8F9FC] border border-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-10 h-10 text-[#6C5CE7]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                ></path>
-              </svg>
+          <div className="bg-[#0F172A] rounded-[3rem] p-12 md:p-20 text-center shadow-lg border border-[#1E293B] mt-6">
+            <div className="w-24 h-24 bg-[#1E293B] border border-[#334155] rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <Ticket className="w-10 h-10 text-[#6C5CE7] drop-shadow-[0_0_10px_rgba(108,92,231,0.5)]" />
             </div>
-            <h3 className="text-xl font-[800] text-[#172033] mb-2">
+            <h3 className="text-2xl md:text-3xl font-[900] text-[#F8FAFC] tracking-tight mb-3">
               No tickets found
             </h3>
-            <p className="text-[#667085] font-[500] mb-8 max-w-sm mx-auto">
-              You don't have any {activeTab} bookings at the moment. Explore
-              events and secure your spot!
+            <p className="text-[#94A3B8] font-[500] text-base md:text-lg mb-10 max-w-md mx-auto">
+              You don't have any {activeTab} bookings at the moment. Explore the hottest events and secure your spot!
             </p>
             <Link
               to="/events"
-              className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-sm font-[700] rounded-xl text-[#FFFFFF] bg-[#6C5CE7] hover:bg-[#4834D4] shadow-[0_8px_20px_rgba(108,92,231,0.25)] transition-all"
+              className="inline-flex items-center justify-center px-10 py-4 text-sm font-[800] uppercase tracking-wider rounded-xl text-[#FFFFFF] bg-[#6C5CE7] hover:bg-[#5A4BCF] shadow-[0_0_20px_rgba(108,92,231,0.4)] hover:shadow-[0_0_30px_rgba(108,92,231,0.6)] transition-all"
             >
               Browse Events
             </Link>

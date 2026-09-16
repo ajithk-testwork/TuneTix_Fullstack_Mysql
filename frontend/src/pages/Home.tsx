@@ -72,8 +72,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-[#F8F9FC] text-[#172033] font-sans selection:bg-[#6C5CE7]/20 pb-0 overflow-hidden relative">
       
-      {/* 1. Navbar at the top */}
-  
+     
 
       {/* 2. HeroShowcase takes up the top section */}
       <HeroShowcase 
@@ -81,8 +80,7 @@ const Home = () => {
         fetchTrendingEvents={getTrendingEvents} 
       />
 
-      {/* 3. Live Radar sits below the Hero */}
-      <LiveRadar />
+     
 
       {/* 4. Main container for Filters and Event Cards */}
       <main className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 pt-12 pb-20 z-10">
