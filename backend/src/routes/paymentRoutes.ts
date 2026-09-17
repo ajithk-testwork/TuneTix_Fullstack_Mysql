@@ -8,8 +8,7 @@ import { stripeWebhook } from "../controllers/WebhookController";
 
 const router = express.Router();
 
-/* Stripe Webhook */
-router.post("/payment/webhook", express.raw({ type: "application/json" }), stripeWebhook);
+
 
 /* Create Checkout Session */
 router.post("/payment/create-checkout-session", protect, createCheckoutSession);
