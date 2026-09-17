@@ -108,20 +108,21 @@ const AdminEventDetails = () => {
   // --- State ---
   const [event, setEvent] = useState<Event | null>(null);
 
-  // Analytics States
-  const [statistics, setStatistics] = useState<Statistics | null>(null);
-  const [categoryStats, setCategoryStats] = useState<CategoryStat[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-
   // Category Management States
   const [categories, setCategories] = useState<SeatCategory[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [generatingCategory, setGeneratingCategory] = useState<string | null>(null);
   const [newCategory, setNewCategory] = useState({
     name: "",
     price: "",
     totalSeats: "",
     color: PRESET_COLORS[0],
   });
+
+  // Analytics States
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [categoryStats, setCategoryStats] = useState<CategoryStat[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -132,9 +133,10 @@ const AdminEventDetails = () => {
   const [isPublishing, setIsPublishing] = useState(false);
 
   // --- Fetch Data ---
-  const fetchEventData = async () => {
+  const fetchEventData = async (showLoader = true) => {
     try {
-      setIsLoading(true);
+      if (showLoader) setIsLoading(true); // Only show global loader if true
+
       const headers = {
         Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
       };
@@ -142,11 +144,9 @@ const AdminEventDetails = () => {
       const eventRes = await API.get(`/event/${id}`, { headers });
       setEvent(eventRes.data.data);
 
-      // Fetch the categories and raw seats for the management UI
       const categoriesRes = await API.get(`/seat-category/${id}`, { headers });
       setCategories(categoriesRes.data.data || []);
 
-      // Fetch the comprehensive Admin Event Details (Sales, Bookings, Analytics)
       const adminDetailsRes = await API.get(`/admin/events/${id}/details`, {
         headers,
       });
@@ -159,12 +159,12 @@ const AdminEventDetails = () => {
     } catch (error) {
       console.error("Failed to fetch event data:", error);
     } finally {
-      setIsLoading(false);
+      if (showLoader) setIsLoading(false); // Only toggle off if we toggled it on
     }
   };
 
   useEffect(() => {
-    if (id) fetchEventData();
+    if (id) fetchEventData(true); // Initial load uses the global loader
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -194,7 +194,7 @@ const AdminEventDetails = () => {
         totalSeats: "",
         color: PRESET_COLORS[0],
       });
-      fetchEventData();
+      fetchEventData(false); // Refresh silently
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to add category");
     }
@@ -202,6 +202,7 @@ const AdminEventDetails = () => {
 
   const handleGenerateSeats = async (categoryId: string) => {
     try {
+      setGeneratingCategory(categoryId); // Start local loading
       await API.post(
         `/seats/generate/${categoryId}`,
         {},
@@ -212,9 +213,11 @@ const AdminEventDetails = () => {
         },
       );
       setExpandedCategories((prev) => [...prev, categoryId]);
-      fetchEventData();
+      await fetchEventData(false); // Fetch updated data silently
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to generate seats");
+    } finally {
+      setGeneratingCategory(null); // Stop local loading
     }
   };
 
@@ -232,7 +235,7 @@ const AdminEventDetails = () => {
       setExpandedCategories((prev) =>
         prev.filter((catId) => catId !== categoryId),
       );
-      fetchEventData();
+      fetchEventData(false); // Refresh silently
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to delete category");
     }
@@ -478,7 +481,7 @@ const AdminEventDetails = () => {
         </div>
       </div>
 
-      {/* EVENT BANNER (Publish Toggle Removed from Here) */}
+      {/* EVENT BANNER */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row">
         <div className="md:w-1/3 relative h-56 md:h-auto">
           <img
@@ -693,9 +696,23 @@ const AdminEventDetails = () => {
                       {!cat.seats || cat.seats.length === 0 ? (
                         <button
                           onClick={() => handleGenerateSeats(cat.id)}
-                          className="bg-[#172033] hover:bg-[#2a344a] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors shadow-sm"
+                          disabled={generatingCategory === cat.id}
+                          className={`bg-[#172033] hover:bg-[#2a344a] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors shadow-sm ${
+                            generatingCategory === cat.id
+                              ? "opacity-75 cursor-not-allowed"
+                              : ""
+                          }`}
                         >
-                          <Settings className="w-4 h-4" /> Generate Seats
+                          {generatingCategory === cat.id ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />{" "}
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Settings className="w-4 h-4" /> Generate Seats
+                            </>
+                          )}
                         </button>
                       ) : (
                         <div className="flex items-center gap-3">
@@ -765,7 +782,7 @@ const AdminEventDetails = () => {
           </div>
         </div>
 
-        {/* PUBLISH EVENT SECTION (MOVED TO BOTTOM) */}
+        {/* PUBLISH EVENT SECTION */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">

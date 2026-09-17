@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,10 +14,10 @@ model booking {
   totalAmount   Float
   bookingStatus booking_bookingStatus
   paymentStatus booking_paymentStatus
-  qrCode        String?               @db.LongText
-  ticketNumber  String                @unique
 
-  // NEW
+  qrCode       String? @db.Text
+  ticketNumber String  @unique
+
   checkedIn   Boolean   @default(false)
   checkedInAt DateTime?
   checkedInBy String?
@@ -25,7 +25,8 @@ model booking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user  user  @relation(fields: [userId], references: [id])
+  user user @relation(fields: [userId], references: [id])
+
   event event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   seats bookingSeat[]
@@ -56,12 +57,14 @@ model event {
   organizer        String?
   status           event_status   @default(UPCOMING)
   venue            String
-  seatCategories   seatCategory[]
-  seats            seat[]
-  booking          booking[]
-  user             user           @relation(fields: [createdById], references: [id], map: "Event_createdById_fkey")
 
-  @@index([createdById], map: "Event_createdById_fkey")
+  seatCategories seatCategory[]
+  seats          seat[]
+  booking        booking[]
+
+  user user @relation(fields: [createdById], references: [id])
+
+  @@index([createdById])
 }
 
 model seatCategory {
