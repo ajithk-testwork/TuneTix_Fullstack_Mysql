@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const adminAPI = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://tunetix-fullstack-postgres.onrender.com/api",
 });
 
 adminAPI.interceptors.request.use((config) => {
