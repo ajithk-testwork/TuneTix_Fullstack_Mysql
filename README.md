@@ -1,331 +1,147 @@
-# 🎟️ Event Ticket Booking System
+# 🎟️ TuneTix — Event Ticket Booking Platform
 
-A full-stack Event Ticket Booking System built with **React.js, TypeScript, Node.js, Express.js, Prisma ORM, MySQL, JWT Authentication, Cloudinary, and Stripe**. This project allows admins to manage events and users to book tickets securely through an online payment gateway.
+A full-stack **Event Ticket Booking Platform** built with **React.js, TypeScript, Node.js, Express.js, Prisma ORM, PostgreSQL, Stripe, Cloudinary, and JWT Authentication**.
+
+TuneTix allows users to discover events, select seats, book tickets, make secure online payments, receive digital tickets with QR codes, and manage their booking history.
+
+The platform also provides powerful **Admin and Super Admin dashboards** for event management, seat management, booking management, attendee check-in, payment tracking, and event analytics.
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
-### 👤 User
+### 👤 User Features
 
 - User Registration
 - User Login
 - JWT Authentication
-- View All Events
-- View Event Details
-- Book Event Tickets
-- Stripe Payment Integration
-- Download Ticket
+- Protected Routes
+- Browse Published Events
+- Event Details
+- Event Banner Images
+- Seat Category Selection
+- Seat Availability
+- Ticket Booking
+- Stripe Checkout
+- Payment Status Tracking
+- Booking Confirmation
+- Digital Ticket Generation
 - QR Code Ticket
 - Booking History
+- Booking Details
 - User Profile
+- Ticket Check-in Status
 
 ---
 
-### 🛠️ Admin
+## 🛠️ Admin Features
 
-- Admin Login
-- Dashboard
+### 📊 Admin Dashboard
+
+- Total Events
+- Published Events
+- Total Bookings
+- Total Tickets Sold
+- Available Seats
+- Total Revenue
+- Payment Status
+- Attendee Information
+- Event-level Analytics
+- Near Sold-out Event Tracking
+- Check-in Tracking
+
+### 🎫 Event Management
+
 - Create Event
 - Update Event
 - Delete Event
-- Publish / Unpublish Event
-- Upload Event Banner (Cloudinary)
-- View Bookings
-- Scan QR Code
-- Manage Attendees
+- Publish Event
+- Unpublish Event
+- Event Details
+- Event Banner Upload
+- Cloudinary Image Management
+
+### 💺 Seat Management
+
+- Create Seat Categories
+- Define Seat Category Price
+- Define Total Seats
+- Generate Seats
+- Track Available Seats
+- Track Booked Seats
+- Seat Category Management
+- Event-specific Seat Configuration
+
+### 📋 Booking Management
+
+- View All Bookings
+- View Booking Details
+- User Booking Information
+- Ticket Information
+- Payment Status
+- Booking Status
+- Check-in Status
+- QR Code Verification
+
+### 📷 Attendee Management
+
+- QR Code Ticket Verification
+- Scan Ticket QR Code
+- Check-in Attendee
+- Track Check-in Time
+- Prevent Duplicate Check-in
 
 ---
 
-### 🔐 Authentication
+## 👑 Super Admin
 
-- Register
-- Login
-- Password Hashing (bcrypt)
-- JWT Authentication
-- Protected Routes
-- Role-Based Access Control (RBAC)
+The Super Admin provides higher-level platform management.
 
----
-
-## 🏗️ Tech Stack
-
-### Frontend
-
-- React.js
-- TypeScript
-- React Router
-- Axios
-- Tailwind CSS
-- React Hook Form
-- React Hot Toast
-
-### Backend
-
-- Node.js
-- Express.js
-- TypeScript
-- Prisma ORM
-- MySQL
-- JWT
-- bcrypt
-
-### Cloud Services
-
-- Cloudinary (Image Upload)
-- Stripe (Payments)
+- Super Admin Login
+- Admin Management
+- Create Admin
+- Manage Admin Users
+- Role-Based Access Control
+- Admin-only Routes
+- Event Management Access Control
 
 ---
 
-## 📂 Project Structure
-
-```
-Event_Ticket_Booking_Fullstack
-│
-├── backend
-│   ├── prisma
-│   ├── src
-│   │   ├── config
-│   │   ├── controllers
-│   │   ├── middleware
-│   │   ├── routes
-│   │   ├── utils
-│   │   ├── server.ts
-│   │
-│   ├── package.json
-│
-├── frontend
-│   ├── src
-│   ├── public
-│   ├── package.json
-│
-└── README.md
-```
-
----
-
-# ⚙️ Installation
-
-## 1️⃣ Clone Repository
-
-```bash
-git clone https://github.com/your-username/event-ticket-booking-system.git
-```
-
-```bash
-cd event-ticket-booking-system
-```
-
----
-
-## 2️⃣ Backend Setup
-
-```bash
-cd backend
-```
-
-Install dependencies
-
-```bash
-npm install
-```
-
-Create Environment File
-
-```
-.env
-```
-
-Example
-
-```env
-PORT=5000
-
-DATABASE_URL="mysql://root:password@localhost:3306/event_booking"
-
-JWT_SECRET=your_jwt_secret
-
-CLOUDINARY_CLOUD_NAME=
-
-CLOUDINARY_API_KEY=
-
-CLOUDINARY_API_SECRET=
-
-STRIPE_SECRET_KEY=
-```
-
-Run Prisma Migration
-
-```bash
-npx prisma migrate dev
-```
-
-Generate Prisma Client
-
-```bash
-npx prisma generate
-```
-
-Run Backend
-
-```bash
-npm run dev
-```
-
----
-
-## 3️⃣ Frontend Setup
-
-```bash
-cd frontend
-```
-
-Install packages
-
-```bash
-npm install
-```
-
-Create
-
-```
-.env
-```
-
-Example
-
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
-Run Frontend
-
-```bash
-npm run dev
-```
-
----
-
-# 🔑 API Endpoints
-
-## Authentication
-
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/api/auth/register` | Register User |
-| POST | `/api/auth/login` | User Login |
-
----
-
-## Events
-
-| Method | Endpoint |
-|---------|----------|
-| GET | `/api/events` |
-| GET | `/api/events/:id` |
-| POST | `/api/events` |
-| PUT | `/api/events/:id` |
-| DELETE | `/api/events/:id` |
-
----
-
-## Booking
-
-| Method | Endpoint |
-|---------|----------|
-| POST | `/api/bookings` |
-| GET | `/api/bookings` |
-| GET | `/api/bookings/:id` |
-
----
-
-## Payment
-
-| Method | Endpoint |
-|---------|----------|
-| POST | `/api/payment/create-checkout-session` |
-| POST | `/api/payment/webhook` |
-
----
-
-# 🗄️ Database
-
-- User
-- Role
-- Event
-- Ticket
-- Booking
-- Payment
-- Attendance
-
----
-
-# 🔄 Application Workflow
-
-```
-SUPER ADMIN
-      │
-Create Admin
-      │
-      ▼
-ADMIN LOGIN
-      │
-Create Event
-      │
-Upload Banner
-      │
-Publish Event
-      │
-──────────────────────────
-      │
-USER REGISTER
-      │
-USER LOGIN
-      │
-Browse Events
-      │
-Book Ticket
-      │
-Stripe Payment
-      │
-Ticket Generated
-      │
-QR Code Generated
-      │
-Email Confirmation
-      │
-Event Check-in
-      │
-Admin Scan QR
-```
-
----
-
-# 📌 Future Improvements
-
-- Email Notifications
-- Seat Selection
-- Wishlist
-- Coupons & Offers
-- Event Categories
-- Search & Filter
-- Reviews & Ratings
-- Admin Analytics Dashboard
-- PDF Ticket Download
-- Mobile Responsive UI
-
----
-
-# 👨‍💻 Author
-
-**Ajith K**
-
-GitHub: https://github.com/ajithk-testwork
-
----
-
-# ⭐ Support
-
-If you found this project useful, please give it a ⭐ on GitHub.
-
-Happy Coding! 🚀
+# 🔐 Authentication & Authorization
+
+TuneTix uses **JWT-based authentication** with role-based authorization.
+
+### Authentication
+
+- User Registration
+- User Login
+- Password Hashing with bcrypt
+- JWT Access Token
+- Protected API Routes
+- Token-based Authorization
+
+### Role-Based Access
+
+```text
+SUPER_ADMIN
+     │
+     ├── Manage Admins
+     ├── Manage Platform
+     └── Access Admin Features
+             │
+             ▼
+          ADMIN
+             │
+             ├── Create Events
+             ├── Manage Events
+             ├── Manage Seats
+             ├── Manage Bookings
+             └── Check-in Attendees
+             
+USER
+ │
+ ├── Browse Events
+ ├── Select Seats
+ ├── Book Tickets
+ ├── Make Payment
+ └── View Tickets
