@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Music, ArrowRight, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

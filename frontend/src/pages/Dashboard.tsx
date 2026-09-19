@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/userAPI";
-import { Ticket, ArrowLeft, Loader2, CalendarX2 } from "lucide-react";
+import { Ticket, ArrowLeft, Loader2 } from "lucide-react";
 
 interface EventDetail {
   id: string;

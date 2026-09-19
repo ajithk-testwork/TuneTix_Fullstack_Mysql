@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
 import { Crown, BellRing, Ticket, Sparkles, ArrowRight } from 'lucide-react';
 

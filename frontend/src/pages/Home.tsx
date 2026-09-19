@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, XCircle } from 'lucide-react';
@@ -10,13 +10,12 @@ import toast from 'react-hot-toast';
 import FilterBar from '../components/FilterBar';
 import EventCard from '../components/EventCard';
 import HeroShowcase from '../components/HeroShowcase';
-import LiveRadar from '../components/LiveRadar';
 import ArtistSpotlight from '../components/ArtistSpotlight'; // Added missing import
 import TuneTixVIP from '../components/TuneTixVIP';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   

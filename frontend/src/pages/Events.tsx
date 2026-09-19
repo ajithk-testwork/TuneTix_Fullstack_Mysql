@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, CalendarDays, Loader2, Music, Filter } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';

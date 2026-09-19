@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Globe, Calendar, MapPin } from "lucide-react";
 import API from "../../api/adminAPI";

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, X, Lock, Armchair, Ticket, ZoomIn, ZoomOut, Maximize, Map } from "lucide-react";
 import toast from "react-hot-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import API from "../api/userAPI";
 
 interface Seat {
@@ -24,14 +24,7 @@ interface SeatCategory {
   seats: Seat[];
 }
 
-// Framer Motion Variants for Staggered Loading
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
+
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -132,7 +125,7 @@ const SeatSelection = () => {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center flex-col gap-4 font-sans">
         <Loader2 className="w-10 h-10 text-[#6C5CE7] animate-spin drop-shadow-[0_0_10px_rgba(108,92,231,0.5)]" />
-        <p className="text-[#94A3B8] text-sm tracking-[0.2em] uppercase font-[800] animate-pulse">
+        <p className="text-[#94A3B8] text-sm tracking-[0.2em] uppercase font-weight-[800] animate-pulse">
           Syncing Live Arena Map...
         </p>
       </div>
